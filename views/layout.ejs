@@ -23,7 +23,10 @@
       <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/missions">Missions</a>
       <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/stats">Stats</a>
       <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/summaries">Summaries</a>
-    
+
+      <% if (me && me.id === OWNER_ID) { %>
+        <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/sitelogs">Logs</a>
+      <% } %>      
       
     
       <div class="ml-auto flex items-center gap-3">

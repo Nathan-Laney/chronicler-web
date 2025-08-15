@@ -9,6 +9,8 @@ const expressLayouts = require("express-ejs-layouts");
 const session = require("express-session");
 const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
+const SiteLog = require("./models/SiteLog");
+
 
 // Simple auth gate
 function requireLogin(req, res, next) {
@@ -76,8 +78,42 @@ app.use((req, res, next) => {
   };
   // expose minimal user to views for header UI
   res.locals.me = req.user || null;
+  res.locals.OWNER_ID = process.env.OWNER_ID;
   next();
 });
+
+// 🔎 Log every request to MongoDB
+app.use((req, res, next) => {
+  const started = Date.now();
+
+  // Build a snapshot now; add status/duration on finish
+  const base = {
+    method: req.method,
+    path: req.path,
+    originalUrl: req.originalUrl,
+    userId:  req.context?.userId || null,
+    guildId: req.context?.guildId || null,
+    ip: (req.headers["x-forwarded-for"] || req.ip || "").toString(),
+    userAgent: req.headers["user-agent"] || null,
+    referrer:  req.headers["referer"] || req.headers["referrer"] || null,
+    query:  req.query || {},
+    params: req.params || {},
+    // Be careful: don't log huge bodies or files
+    body: (req.body && Object.keys(req.body).length <= 50) ? req.body : { _omitted: true, keys: Object.keys(req.body||{}) }
+  };
+
+  res.on("finish", () => {
+    const doc = new SiteLog({
+      ...base,
+      status: res.statusCode,
+      durationMs: Date.now() - started
+    });
+    doc.save().catch(err => console.error("SiteLog save error:", err));
+  });
+
+  next();
+});
+
 
 // Routes
 app.use("/", require("./routes/index"));
@@ -88,7 +124,7 @@ app.use("/downtime", requireLogin, require("./routes/downtime"));
 app.use("/missions", require("./routes/missions"));
 // app.use("/admin", requireLogin, require("./routes/admin")); // Removed admin panel.
 app.use("/admin", (req, res) => res.status(410).send("Gone")); // Removed admin panel.
-
+app.use("/sitelogs", require("./routes/sitelogs"));
 app.use("/stats", require("./routes/stats"));
 app.use("/summaries", require("./routes/summaries"));
 app.use("/auth", require("./routes/auth"));
