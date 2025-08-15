@@ -38,21 +38,28 @@
             <span class="truncate">
               <%= cn %> (<%= (displayNames && displayNames[mission.players[idx]]) || mission.players[idx] %>)
             </span>
-            <form method="POST" action="/missions/<%= mission.missionId %>/removeplayer">
-              <input type="hidden" name="userId" value="<%= mission.players[idx] %>"/>
-              <input type="hidden" name="characterId" value="<%= mission.characterIds[idx] %>"/>
-              <button class="text-rose-600">remove</button>
-            </form>
+            <% if (me && me.id === mission.gmId) { %>
+              <form method="POST" action="/missions/<%= mission.missionId %>/removeplayer">
+                <input type="hidden" name="userId" value="<%= mission.players[idx] %>"/>
+                <input type="hidden" name="characterId" value="<%= mission.characterIds[idx] %>"/>
+                <button class="text-rose-600">remove</button>
+              </form>
+            <% } %>
           </li>
         <% }) %>
       </ul>
 
       <h3 class="font-medium mt-3">Add Player</h3>
-      <form method="POST" action="/missions/<%= mission.missionId %>/addplayer" class="grid gap-2">
-        <input name="userId" class="px-3 py-2 border rounded-xl" placeholder="User ID"/>
-        <input name="characterId" class="px-3 py-2 border rounded-xl" placeholder="Character ID"/>
-        <button class="px-3 py-2 bg-emerald-600 text-white rounded-xl">Add Player</button>
-      </form>
+      <% if (me && me.id === mission.gmId) { %>
+        <form method="POST" action="/missions/<%= mission.missionId %>/addplayer" class="grid gap-2">
+          <input name="userId" class="px-3 py-2 border rounded-xl" placeholder="User ID"/>
+          <input name="characterId" class="px-3 py-2 border rounded-xl" placeholder="Character ID"/>
+          <button class="px-3 py-2 bg-emerald-600 text-white rounded-xl">Add Player</button>
+        </form>
+      <% } else { %>
+        <p class="text-sm text-slate-500">Only the GM can add or remove players.</p>
+      <% } %>
+
     </div>
 
     <div class="bg-white rounded-2xl p-4 shadow-sm space-y-3">

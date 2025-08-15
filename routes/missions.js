@@ -84,6 +84,11 @@ router.post("/:id/complete", async (req, res) => {
 
 router.post("/:id/addplayer", async (req, res) => {
   const { userId, characterId } = req.body;
+  const mission = await Mission.findOne({ missionId: req.params.id });
+  if (!mission) throw new Error("Mission not found.");
+  if (req.context.userId !== mission.gmId) {
+    return res.status(403).send("Forbidden: Only the GM can add players.");
+  }
   const char = await Character.findOne({ characterId });
   if (!char) throw new Error("Character not found.");
   await Mission.updateOne(
@@ -95,6 +100,11 @@ router.post("/:id/addplayer", async (req, res) => {
 
 router.post("/:id/removeplayer", async (req, res) => {
   const { userId, characterId } = req.body;
+  const mission = await Mission.findOne({ missionId: req.params.id });
+  if (!mission) throw new Error("Mission not found.");
+  if (req.context.userId !== mission.gmId) {
+    return res.status(403).send("Forbidden: Only the GM can remove players.");
+  }
   const char = await Character.findOne({ characterId });
   await Mission.updateOne(
     { missionId: req.params.id },
