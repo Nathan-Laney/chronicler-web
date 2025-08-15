@@ -43,6 +43,48 @@
         >Remove XP</button>
       </div>
     </form>
+    
+  <!-- XP change message (character ops) -->
+  <% if (src === 'char' && typeof msg === 'string' && msg.length) { %>
+    <div class="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-900 px-3 py-2 text-sm">
+      <%= msg %>
+    </div>
+  <% } %>
+  </div>
+
+  <!-- Bank XP panel -->
+  <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <h2 class="font-semibold mb-2">Bank XP</h2>
+
+    <div class="text-sm text-slate-600 mb-2">
+      Current banked XP: <b id="bank-xp-top"><%= (profile && profile.experience) || 0 %></b>
+    </div>
+
+    <form id="bank-form" class="grid gap-3" method="POST">
+      <input id="bank-amount" name="amount" type="number" min="0" class="px-3 py-2 border rounded-xl" placeholder="XP amount" required />
+      <div class="flex gap-2">
+        <button
+          formaction="/xp/add/bank"
+          class="px-4 py-2 bg-emerald-600 text-white rounded-xl disabled:opacity-50"
+          id="btn-bank-add"
+          disabled
+        >Add to Bank</button>
+
+        <button
+          formaction="/xp/remove/bank"
+          class="px-4 py-2 bg-rose-600 text-white rounded-xl disabled:opacity-50"
+          id="btn-bank-remove"
+          disabled
+        >Remove from Bank</button>
+      </div>
+    </form>
+
+    <!-- XP change message (bank ops) -->
+    <% if (src === 'bank' && typeof msg === 'string' && msg.length) { %>
+      <div class="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-900 px-3 py-2 text-sm">
+        <%= msg %>
+      </div>
+    <% } %>
   </div>
 <!-- Transfer Bank -> Character -->
 <div class="bg-white rounded-2xl p-4 shadow-sm">
@@ -52,6 +94,9 @@
   <div class="text-sm text-slate-600 mb-2">
     Banked XP: <b id="bank-xp"><%= (profile && profile.experience) || 0 %></b>
   </div>
+
+  
+
 
   <form method="POST" action="/xp/transfer" class="grid gap-3" id="transfer-form">
     <select name="characterId" class="px-3 py-2 border rounded-xl" required>
@@ -64,9 +109,9 @@
     <button id="transfer-btn" class="px-4 py-2 bg-slate-900 text-white rounded-xl">Transfer</button>
   </form>
 </div>
-
 <script>
   (function () {
+    // Character Add/Remove logic (fixed validation)
     const sel = document.getElementById('xp-character');
     const amt = document.getElementById('xp-amount');
     const info = document.getElementById('xp-char-info');
@@ -77,20 +122,17 @@
 
     function validAmount() {
       const val = Number(amt.value);
-      return Number.isFinite(val) && val > 0;  // must be a positive number
+      return Number.isFinite(val) && val > 0;
     }
-
     function hasCharacter() {
       return !!sel.value && sel.value !== '';
     }
-
     function updateState() {
       const enable = hasCharacter() && validAmount();
       btnAdd.disabled = !enable;
       btnRemove.disabled = !enable;
     }
-
-    sel.addEventListener('change', () => {
+    sel?.addEventListener('change', () => {
       const opt = sel.options[sel.selectedIndex];
       if (opt && opt.dataset) {
         xpEl.textContent = opt.dataset.xp || '0';
@@ -101,10 +143,32 @@
       }
       updateState();
     });
-
-    amt.addEventListener('input', updateState);
-
-    // kick once on load (in case fields are pre-filled by the browser)
+    amt?.addEventListener('input', updateState);
     updateState();
+
+    // Bank Add/Remove logic
+    const bankAmt = document.getElementById('bank-amount');
+    const btnBankAdd = document.getElementById('btn-bank-add');
+    const btnBankRemove = document.getElementById('btn-bank-remove');
+
+    function updateBankState() {
+      const val = Number(bankAmt.value);
+      const ok = Number.isFinite(val) && val > 0;
+      btnBankAdd.disabled = !ok;
+      btnBankRemove.disabled = !ok;
+    }
+    bankAmt?.addEventListener('input', updateBankState);
+    updateBankState();
+
+    // Transfer button validator (from your earlier snippet)
+    const tAmt = document.getElementById('transfer-amount');
+    const tBtn = document.getElementById('transfer-btn');
+    const bankXP = parseInt(document.getElementById('bank-xp').textContent, 10) || 0;
+    function checkAmount() {
+      const val = Number(tAmt.value);
+      tBtn.disabled = !(val > 0 && val <= bankXP);
+    }
+    tAmt?.addEventListener('input', checkAmount);
+    checkAmount();
   })();
 </script>
