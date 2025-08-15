@@ -1,0 +1,35 @@
+<section class="grid gap-6">
+  <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <h2 class="font-semibold">Admin: Bank XP</h2>
+    <form method="POST" action="/admin/xp/addbank" class="grid gap-2 md:flex mt-2">
+      <input name="userId" class="px-3 py-2 border rounded-xl" placeholder="User ID"/>
+      <input name="amount" type="number" class="px-3 py-2 border rounded-xl" placeholder="Amount"/>
+      <input name="mission" class="px-3 py-2 border rounded-xl" placeholder="Mission (opt)"/>
+      <button class="px-4 py-2 bg-emerald-600 text-white rounded-xl">Add</button>
+    </form>
+    <form method="POST" action="/admin/xp/removebank" class="grid gap-2 md:flex mt-2">
+      <input name="userId" class="px-3 py-2 border rounded-xl" placeholder="User ID"/>
+      <input name="amount" type="number" class="px-3 py-2 border rounded-xl" placeholder="Amount"/>
+      <input name="mission" class="px-3 py-2 border rounded-xl" placeholder="Mission (opt)"/>
+      <button class="px-4 py-2 bg-rose-600 text-white rounded-xl">Remove</button>
+    </form>
+  </div>
+
+  <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <h2 class="font-semibold">Admin: Character XP</h2>
+    <form method="POST" action="/admin/xp/addcharacter" class="grid gap-2 md:flex mt-2">
+      <input name="userId" class="px-3 py-2 border rounded-xl" placeholder="User ID"/>
+      <input name="characterId" class="px-3 py-2 border rounded-xl" placeholder="Character ID"/>
+      <input name="amount" type="number" class="px-3 py-2 border rounded-xl" placeholder="Amount"/>
+      <input name="mission" class="px-3 py-2 border rounded-xl" placeholder="Mission (opt)"/>
+      <button class="px-4 py-2 bg-emerald-600 text-white rounded-xl">Add</button>
+    </form>
+    <form method="POST" action="/admin/xp/removecharacter" class="grid gap-2 md:flex mt-2">
+      <input name="userId" class="px-3 py-2 border rounded-xl" placeholder="User ID"/>
+      <input name="characterId" class="px-3 py-2 border rounded-xl" placeholder="Character ID"/>
+      <input name="amount" type="number" class="px-3 py-2 border rounded-xl" placeholder="Amount"/>
+      <input name="mission" class="px-3 py-2 border rounded-xl" placeholder="Mission (opt)"/>
+      <button class="px-4 py-2 bg-rose-600 text-white rounded-xl">Remove</button>
+    </form>
+  </div>
+</section>

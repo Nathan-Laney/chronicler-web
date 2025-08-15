@@ -1,0 +1,58 @@
+<section class="space-y-6">
+  <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div>
+        <h1 class="text-xl font-semibold"><%= mission.missionName %></h1>
+        <div class="text-sm text-slate-500">ID <%= mission.missionId %> • <%= mission.missionStatus %></div>
+      </div>
+      <form method="POST" action="/missions/<%= mission.missionId %>/delete" onsubmit="return confirm('Delete mission?');">
+        <button class="px-3 py-2 bg-rose-600 text-white rounded-xl">Delete</button>
+      </form>
+    </div>
+    <p class="mt-2"><%= mission.description || '—' %></p>
+
+    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <form method="POST" action="/missions/<%= mission.missionId %>/rename" class="flex gap-2">
+        <input type="hidden" name="current_name" value="<%= mission.missionName %>"/>
+        <input name="new_name" class="px-3 py-2 border rounded-xl flex-1" placeholder="New name"/>
+        <button class="px-3 py-2 bg-slate-900 text-white rounded-xl">Rename</button>
+      </form>
+      <form method="POST" action="/missions/<%= mission.missionId %>/description" class="flex gap-2">
+        <input name="description" class="px-3 py-2 border rounded-xl flex-1" placeholder="New description"/>
+        <button class="px-3 py-2 bg-slate-900 text-white rounded-xl">Save Description</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="bg-white rounded-2xl p-4 shadow-sm">
+      <h2 class="font-semibold mb-2">Players</h2>
+      <ul class="text-sm space-y-1">
+        <% mission.characterNames.forEach((cn, idx) => { %>
+          <li class="flex items-center justify-between gap-2">
+            <span class="truncate"><%= cn %> (<%= mission.players[idx] %>)</span>
+            <form method="POST" action="/missions/<%= mission.missionId %>/removeplayer">
+              <input type="hidden" name="userId" value="<%= mission.players[idx] %>"/>
+              <input type="hidden" name="characterId" value="<%= mission.characterIds[idx] %>"/>
+              <button class="text-rose-600">remove</button>
+            </form>
+          </li>
+        <% }) %>
+      </ul>
+
+      <h3 class="font-medium mt-3">Add Player</h3>
+      <form method="POST" action="/missions/<%= mission.missionId %>/addplayer" class="grid gap-2">
+        <input name="userId" class="px-3 py-2 border rounded-xl" placeholder="User ID"/>
+        <input name="characterId" class="px-3 py-2 border rounded-xl" placeholder="Character ID"/>
+        <button class="px-3 py-2 bg-emerald-600 text-white rounded-xl">Add Player</button>
+      </form>
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+      <h2 class="font-semibold">Status</h2>
+      <form method="POST" action="/missions/<%= mission.missionId %>/complete">
+        <button class="px-3 py-2 bg-indigo-600 text-white rounded-xl">Mark Complete</button>
+      </form>
+    </div>
+  </div>
+</section>

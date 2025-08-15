@@ -1,0 +1,20 @@
+<section class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-semibold">Missions</h1>
+    <a href="/missions/new/form" class="px-4 py-2 bg-indigo-600 text-white rounded-xl">Create Mission</a>
+  </div>
+
+  <ul class="grid gap-3">
+    <% missions.forEach(m => { %>
+      <li class="bg-white rounded-2xl p-4 shadow-sm">
+        <div class="flex items-center justify-between">
+          <div>
+            <a href="/missions/<%= m.missionId %>" class="font-semibold text-indigo-600"><%= m.missionName %></a>
+            <div class="text-sm text-slate-500"><%= m.missionStatus %></div>
+          </div>
+          <div class="text-sm text-slate-500"><%= m.players.length %> players</div>
+        </div>
+      </li>
+    <% }) %>
+  </ul>
+</section>

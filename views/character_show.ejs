@@ -1,0 +1,63 @@
+<section class="space-y-6">
+  <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div>
+        <h1 class="text-xl font-semibold"><%= char.characterName %></h1>
+        <p class="text-sm text-slate-500">ID <%= char.characterId %> • Lvl <%= char.level %> • Class <%= char.class || '—' %></p>
+      </div>
+      <form method="POST" action="/characters/<%= char.characterId %>/delete" onsubmit="return confirm('Delete this character?');">
+        <button class="px-3 py-2 bg-rose-600 text-white rounded-xl">Delete</button>
+      </form>
+    </div>
+    <p class="mt-3"><%= char.description || 'No description yet.' %></p>
+    <div class="mt-4 text-sm text-slate-600">XP <b><%= char.experience %></b> • DT <b><%= char.downtime %></b></div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+      <h2 class="font-semibold">Rename</h2>
+      <form method="POST" action="/characters/<%= char.characterId %>/rename" class="flex gap-2">
+        <input name="new_name" class="flex-1 px-3 py-2 border rounded-xl" placeholder="New name" />
+        <button class="px-3 py-2 bg-slate-900 text-white rounded-xl">Save</button>
+      </form>
+
+      <h2 class="font-semibold">Set Class</h2>
+      <form method="POST" action="/characters/<%= char.characterId %>/class" class="flex gap-2">
+        <input name="class" class="flex-1 px-3 py-2 border rounded-xl" placeholder="e.g. Fighter" />
+        <button class="px-3 py-2 bg-slate-900 text-white rounded-xl">Save</button>
+      </form>
+
+      <h2 class="font-semibold">Description</h2>
+      <form method="POST" action="/characters/<%= char.characterId %>/description" class="space-y-2">
+        <textarea name="description" class="w-full px-3 py-2 border rounded-xl" rows="4"><%= char.description || '' %></textarea>
+        <button class="px-3 py-2 bg-slate-900 text-white rounded-xl">Save</button>
+      </form>
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+      <h2 class="font-semibold">Missions (Completed)</h2>
+      <ul class="list-disc pl-5 text-sm">
+        <% (char.missions||[]).forEach(m => { %>
+          <li class="flex items-center justify-between gap-2">
+            <span class="truncate"><%= m %></span>
+            <form method="POST" action="/characters/<%= char.characterId %>/mission/remove">
+              <input type="hidden" name="mission" value="<%= m %>" />
+              <button class="text-rose-600">remove</button>
+            </form>
+          </li>
+        <% }) %>
+      </ul>
+      <form method="POST" action="/characters/<%= char.characterId %>/mission/add" class="flex gap-2">
+        <input name="mission" class="flex-1 px-3 py-2 border rounded-xl" placeholder="Mission name or ID" />
+        <button class="px-3 py-2 bg-slate-900 text-white rounded-xl">Add</button>
+      </form>
+
+      <h2 class="font-semibold">Downtime Activities</h2>
+      <ul class="list-disc pl-5 text-sm">
+        <% (char.downtimeActivities||[]).slice().reverse().forEach(a => { %>
+          <li><%= a %></li>
+        <% }) %>
+      </ul>
+    </div>
+  </div>
+</section>

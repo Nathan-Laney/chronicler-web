@@ -1,0 +1,67 @@
+<section class="bg-white rounded-2xl p-4 shadow-sm">
+  <h1 class="text-xl font-semibold mb-2">Character Stats</h1>
+  <form method="GET" class="flex flex-wrap gap-2 mb-4">
+    <label class="text-sm">Analyze
+      <select name="analyze" class="px-2 py-1 border rounded-xl ml-2">
+        <option value="level" <%= analyze==='level'?'selected':'' %>>Level</option>
+        <option value="class" <%= analyze==='class'?'selected':'' %>>Class</option>
+      </select>
+    </label>
+    <label class="text-sm">Grouping
+      <select name="grouping" class="px-2 py-1 border rounded-xl ml-2">
+        <option value="single" <%= grouping==='single'?'selected':'' %>>Single</option>
+        <option value="grouped" <%= grouping==='grouped'?'selected':'' %>>Grouped (3-level)</option>
+      </select>
+    </label>
+    <button class="px-3 py-2 bg-slate-900 text-white rounded-xl">Update</button>
+  </form>
+
+  <!-- Fixed-height container; canvas fills it -->
+  <div class="w-full h-80 md:h-96">
+    <canvas id="chart" class="w-full h-full"></canvas>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const labels = <%- labels %>;
+  const data = <%- counts %>;
+
+  const ctx = document.getElementById('chart');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label: 'Characters', data }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false, // allow canvas to match container height
+      plugins: {
+        legend: { display: false }, // save vertical space
+        tooltip: { mode: 'index', intersect: false }
+      },
+      layout: {
+        padding: { top: 8, right: 8, bottom: 8, left: 8 }
+      },
+      scales: {
+        x: {
+          ticks: {
+            autoSkip: true,
+            maxRotation: 0,
+            callback: (val, i) => {
+              // keep labels short; show every ~n-th if many
+              const step = labels.length > 20 ? Math.ceil(labels.length / 20) : 1;
+              return i % step === 0 ? labels[i] : '';
+            }
+          },
+          grid: { display: false }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { precision: 0 }
+        }
+      }
+    }
+  });
+</script>

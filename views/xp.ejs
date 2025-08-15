@@ -1,0 +1,53 @@
+<section class="grid gap-6">
+  <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <h2 class="font-semibold mb-2">Add / Remove XP (Bank)</h2>
+    <form method="POST" action="/xp/add/bank" class="flex gap-2 mb-2">
+      <input name="amount" type="number" class="px-3 py-2 border rounded-xl flex-1" placeholder="Amount" />
+      <input name="mission" class="px-3 py-2 border rounded-xl flex-1" placeholder="Mission (optional)" />
+      <button class="px-4 py-2 bg-emerald-600 text-white rounded-xl">Add to Bank</button>
+    </form>
+    <form method="POST" action="/xp/remove/bank" class="flex gap-2">
+      <input name="amount" type="number" class="px-3 py-2 border rounded-xl flex-1" placeholder="Amount" />
+      <input name="mission" class="px-3 py-2 border rounded-xl flex-1" placeholder="Mission (optional)" />
+      <button class="px-4 py-2 bg-rose-600 text-white rounded-xl">Remove from Bank</button>
+    </form>
+  </div>
+
+  <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <h2 class="font-semibold mb-2">Add / Remove XP (Character)</h2>
+    <form method="POST" action="/xp/add/character" class="grid gap-2 md:flex">
+      <select name="characterId" class="px-3 py-2 border rounded-xl flex-1">
+        <% (chars||[]).forEach(c => { %>
+          <option value="<%= c.characterId %>"><%= c.characterName %></option>
+        <% }) %>
+      </select>
+      <input name="amount" type="number" class="px-3 py-2 border rounded-xl flex-1" placeholder="Amount" />
+      <input name="mission" class="px-3 py-2 border rounded-xl flex-1" placeholder="Mission (optional)" />
+      <button class="px-4 py-2 bg-emerald-600 text-white rounded-xl">Add XP</button>
+    </form>
+    <form method="POST" action="/xp/remove/character" class="grid gap-2 md:flex mt-2">
+      <select name="characterId" class="px-3 py-2 border rounded-xl flex-1">
+        <% (chars||[]).forEach(c => { %>
+          <option value="<%= c.characterId %>"><%= c.characterName %></option>
+        <% }) %>
+      </select>
+      <input name="amount" type="number" class="px-3 py-2 border rounded-xl flex-1" placeholder="Amount" />
+      <input name="mission" class="px-3 py-2 border rounded-xl flex-1" placeholder="Mission (optional)" />
+      <button class="px-4 py-2 bg-rose-600 text-white rounded-xl">Remove XP</button>
+    </form>
+  </div>
+
+  <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <h2 class="font-semibold mb-2">Transfer XP (Bank → Character)</h2>
+    <form method="POST" action="/xp/transfer" class="grid gap-2 md:flex">
+      <select name="characterId" class="px-3 py-2 border rounded-xl flex-1">
+        <% (chars||[]).forEach(c => { %>
+          <option value="<%= c.characterId %>"><%= c.characterName %></option>
+        <% }) %>
+      </select>
+      <input name="amount" type="number" class="px-3 py-2 border rounded-xl flex-1" placeholder="Amount" />
+      <button class="px-4 py-2 bg-slate-900 text-white rounded-xl">Transfer</button>
+    </form>
+    <p class="text-sm text-slate-500 mt-2">Transfers grant +2 downtime per 1 XP.</p>
+  </div>
+</section>

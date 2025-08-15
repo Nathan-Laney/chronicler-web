@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>The Chronicler Web</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { theme: { extend: { } } };</script>
+</head>
+<body class="bg-slate-50 text-slate-900">
+  <header class="sticky top-0 z-10 bg-white/80 backdrop-blur border-b">
+    <nav class="max-w-5xl mx-auto flex items-center gap-2 p-3 overflow-x-auto">
+      <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/">Dashboard</a>
+      <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/characters">Characters</a>
+      <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/missions">Missions</a>
+      <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/xp">XP</a>
+      <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/downtime">Downtime</a>
+      <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/bank">Bank</a>
+      <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/stats">Stats</a>
+      <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/summaries">Summaries</a>
+      <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/admin">Admin</a>
+    </nav>
+  </header>
+  <main class="max-w-5xl mx-auto p-4">
+    <%- body %>
+  </main>
+  <footer class="max-w-5xl mx-auto p-6 text-center text-sm text-slate-500">
+    <p>© <%= new Date().getFullYear() %> The Chronicler Web</p>
+  </footer>
+</body>
+</html>
