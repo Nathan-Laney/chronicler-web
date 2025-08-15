@@ -57,9 +57,13 @@
 
     <div class="bg-white rounded-2xl p-4 shadow-sm space-y-3">
       <h2 class="font-semibold">Status</h2>
-      <form method="POST" action="/missions/<%= mission.missionId %>/complete">
-        <button class="px-3 py-2 bg-indigo-600 text-white rounded-xl">Mark Complete</button>
-      </form>
+      <% if (me && me.id === mission.gmId) { %>
+        <form method="POST" action="/missions/<%= mission.missionId %>/complete">
+          <button class="px-3 py-2 bg-indigo-600 text-white rounded-xl">Mark Complete</button>
+        </form>
+      <% } else { %>
+        <p class="text-sm text-slate-500">Only the GM can mark this mission complete.</p>
+      <% } %>
     </div>
   </div>
 </section>

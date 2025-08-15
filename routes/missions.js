@@ -43,7 +43,7 @@ router.get("/:id", async (req, res) => {
     mapDisplayNames(guildId, [mission.gmId])
   ]);
 
-  // Attach pretty mission name + channel link(s) for the view
+  // Attach pretty mission name channel link(s) for the view
   mission._displayName = resolved.display;    // e.g. "#table-5" instead of "<#123...>"
   mission._channelLinks = resolved.channels;  // [{ id, name: "#table-5", url }]
   mission._gmName = gmMap[mission.gmId] || mission.gmId;
@@ -69,7 +69,16 @@ router.post("/:id/delete", async (req, res) => {
 });
 
 router.post("/:id/complete", async (req, res) => {
-  await Mission.updateOne({ missionId: req.params.id }, { $set: { missionStatus: "completed" }});
+  const mission = await Mission.findOne({ missionId: req.params.id });
+  if (!mission) throw new Error("Mission not found.");
+
+  // Only the GM can mark complete
+  if (req.context.userId !== mission.gmId) {
+    return res.status(403).send("Forbidden: Only the GM can mark this mission complete.");
+  }
+
+  mission.missionStatus = "completed";
+  await mission.save();
   res.redirect(`/missions/${req.params.id}`);
 });
 
