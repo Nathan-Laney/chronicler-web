@@ -7,6 +7,7 @@
             <a class="text-sm text-indigo-600 underline" target="_blank" rel="noopener"
               href="<%= mission._channelLinks[0].url %>">Open channel in Discord</a>
           <% } %>
+          <p class="text-sm text-slate-500 mt-1">GM: <%= mission._gmName || mission.gmId %></p>
           <div class="text-sm text-slate-500">ID <%= mission.missionId %> • <%= mission.missionStatus %></div>
       </div>
       <form method="POST" action="/missions/<%= mission.missionId %>/delete" onsubmit="return confirm('Delete mission?');">

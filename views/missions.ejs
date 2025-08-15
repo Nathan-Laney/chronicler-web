@@ -16,7 +16,10 @@
             <% } %>            
             <div class="text-sm text-slate-500"><%= m.missionStatus %></div>
           </div>
-          <div class="text-sm text-slate-500"><%= m.players.length %> players</div>
+          <div class="text-sm text-right text-slate-500 leading-tight">
+            <div>GM: <%= m._gmName || m.gmId %></div>
+            <div><%= m.players.length %> players</div>
+          </div>
         </div>
       </li>
     <% }) %>

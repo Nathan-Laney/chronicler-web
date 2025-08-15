@@ -11,9 +11,12 @@ router.get("/", async (req, res) => {
   const myChars = await Character.find({ guildId, ownerId: userId }).sort({ characterName: 1 });
     // Resolve channel mentions in mission names
   const resolved = await Promise.all(missions.map(m => resolveChannelMentions(guildId, m.missionName)));
+  // Resolve GM display names
+  const gmMap = await mapDisplayNames(guildId, missions.map(m => m.gmId));
   missions.forEach((m, i) => {
     m._displayName = resolved[i].display;
     m._channelLinks = resolved[i].channels; // array of {id,name,url}
+    m._gmName = gmMap[m.gmId] || m.gmId;
   });
   res.render("missions", { missions, myChars, toast: null });
 });
@@ -34,14 +37,16 @@ router.get("/:id", async (req, res) => {
   const { guildId } = req.context;
 
   // Resolve player display names and channel mentions concurrently
-  const [displayNames, resolved] = await Promise.all([
+  const [displayNames, resolved, gmMap] = await Promise.all([
     mapDisplayNames(guildId, mission.players),
-    resolveChannelMentions(guildId, mission.missionName)
+    resolveChannelMentions(guildId, mission.missionName),
+    mapDisplayNames(guildId, [mission.gmId])
   ]);
 
   // Attach pretty mission name + channel link(s) for the view
   mission._displayName = resolved.display;    // e.g. "#table-5" instead of "<#123...>"
   mission._channelLinks = resolved.channels;  // [{ id, name: "#table-5", url }]
+  mission._gmName = gmMap[mission.gmId] || mission.gmId;
 
   res.render("mission_show", { mission, displayNames });
 });
