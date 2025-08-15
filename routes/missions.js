@@ -2,6 +2,7 @@ const router = require("express").Router();
 const { customAlphabet } = require("nanoid");
 const Mission = require("../models/Mission");
 const Character = require("../models/Character");
+const { mapDisplayNames } = require("../utils/discord");
 const nano = customAlphabet("0123456789abcdefghijklmnopqrstuvwxyz", 12);
 
 router.get("/", async (req, res) => {
@@ -23,7 +24,10 @@ router.post("/create", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const mission = await Mission.findOne({ missionId: req.params.id });
   if (!mission) throw new Error("Mission not found.");
-  res.render("mission_show", { mission });
+  // Build a map of userId -> displayName for the players
+  const guildId = req.context.guildId;
+  const displayNames = await mapDisplayNames(guildId, mission.players);
+  res.render("mission_show", { mission, displayNames });
 });
 
 router.post("/:id/rename", async (req, res) => {

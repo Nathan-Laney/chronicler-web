@@ -30,7 +30,9 @@
       <ul class="text-sm space-y-1">
         <% mission.characterNames.forEach((cn, idx) => { %>
           <li class="flex items-center justify-between gap-2">
-            <span class="truncate"><%= cn %> (<%= mission.players[idx] %>)</span>
+            <span class="truncate">
+              <%= cn %> (<%= (displayNames && displayNames[mission.players[idx]]) || mission.players[idx] %>)
+            </span>
             <form method="POST" action="/missions/<%= mission.missionId %>/removeplayer">
               <input type="hidden" name="userId" value="<%= mission.players[idx] %>"/>
               <input type="hidden" name="characterId" value="<%= mission.characterIds[idx] %>"/>
