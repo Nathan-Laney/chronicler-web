@@ -1,53 +1,110 @@
 <section class="grid gap-6">
+  <!-- Character XP panel -->
   <div class="bg-white rounded-2xl p-4 shadow-sm">
-    <h2 class="font-semibold mb-2">Add / Remove XP (Bank)</h2>
-    <form method="POST" action="/xp/add/bank" class="flex gap-2 mb-2">
-      <input name="amount" type="number" class="px-3 py-2 border rounded-xl flex-1" placeholder="Amount" />
-      <input name="mission" class="px-3 py-2 border rounded-xl flex-1" placeholder="Mission (optional)" />
-      <button class="px-4 py-2 bg-emerald-600 text-white rounded-xl">Add to Bank</button>
+    <h2 class="font-semibold mb-2">Character XP</h2>
+
+    <form id="xp-form" class="grid gap-3" method="POST">
+      <!-- Character dropdown -->
+      <select id="xp-character" name="characterId" class="px-3 py-2 border rounded-xl" required>
+        <option value="" disabled selected>Select character…</option>
+        <% (chars||[]).forEach(c => { %>
+          <option
+            value="<%= c.characterId %>"
+            data-xp="<%= c.experience %>"
+            data-level="<%= c.level %>"
+          ><%= c.characterName %></option>
+        <% }) %>
+      </select>
+
+      <!-- Selected character info -->
+      <div id="xp-char-info" class="text-sm text-slate-600 hidden">
+        <span>XP: <b id="xp-char-xp">0</b></span>
+        <span class="mx-2">•</span>
+        <span>Level: <b id="xp-char-level">0</b></span>
+      </div>
+
+      <!-- Amount input -->
+      <input id="xp-amount" name="amount" type="number" min="0" class="px-3 py-2 border rounded-xl" placeholder="XP amount" required />
+
+      <!-- Action buttons -->
+      <div class="flex gap-2">
+        <button
+          formaction="/xp/add/character"
+          class="px-4 py-2 bg-emerald-600 text-white rounded-xl disabled:opacity-50"
+          id="btn-add"
+          disabled
+        >Add XP</button>
+
+        <button
+          formaction="/xp/remove/character"
+          class="px-4 py-2 bg-rose-600 text-white rounded-xl disabled:opacity-50"
+          id="btn-remove"
+          disabled
+        >Remove XP</button>
+      </div>
     </form>
-    <form method="POST" action="/xp/remove/bank" class="flex gap-2">
-      <input name="amount" type="number" class="px-3 py-2 border rounded-xl flex-1" placeholder="Amount" />
-      <input name="mission" class="px-3 py-2 border rounded-xl flex-1" placeholder="Mission (optional)" />
-      <button class="px-4 py-2 bg-rose-600 text-white rounded-xl">Remove from Bank</button>
-    </form>
+  </div>
+<!-- Transfer Bank -> Character -->
+<div class="bg-white rounded-2xl p-4 shadow-sm">
+  <h2 class="font-semibold mb-2">Transfer XP (Bank → Character)</h2>
+
+  <!-- Banked XP info -->
+  <div class="text-sm text-slate-600 mb-2">
+    Banked XP: <b id="bank-xp"><%= (profile && profile.experience) || 0 %></b>
   </div>
 
-  <div class="bg-white rounded-2xl p-4 shadow-sm">
-    <h2 class="font-semibold mb-2">Add / Remove XP (Character)</h2>
-    <form method="POST" action="/xp/add/character" class="grid gap-2 md:flex">
-      <select name="characterId" class="px-3 py-2 border rounded-xl flex-1">
-        <% (chars||[]).forEach(c => { %>
-          <option value="<%= c.characterId %>"><%= c.characterName %></option>
-        <% }) %>
-      </select>
-      <input name="amount" type="number" class="px-3 py-2 border rounded-xl flex-1" placeholder="Amount" />
-      <input name="mission" class="px-3 py-2 border rounded-xl flex-1" placeholder="Mission (optional)" />
-      <button class="px-4 py-2 bg-emerald-600 text-white rounded-xl">Add XP</button>
-    </form>
-    <form method="POST" action="/xp/remove/character" class="grid gap-2 md:flex mt-2">
-      <select name="characterId" class="px-3 py-2 border rounded-xl flex-1">
-        <% (chars||[]).forEach(c => { %>
-          <option value="<%= c.characterId %>"><%= c.characterName %></option>
-        <% }) %>
-      </select>
-      <input name="amount" type="number" class="px-3 py-2 border rounded-xl flex-1" placeholder="Amount" />
-      <input name="mission" class="px-3 py-2 border rounded-xl flex-1" placeholder="Mission (optional)" />
-      <button class="px-4 py-2 bg-rose-600 text-white rounded-xl">Remove XP</button>
-    </form>
-  </div>
+  <form method="POST" action="/xp/transfer" class="grid gap-3" id="transfer-form">
+    <select name="characterId" class="px-3 py-2 border rounded-xl" required>
+      <option value="" disabled selected>Select character…</option>
+      <% (chars||[]).forEach(c => { %>
+        <option value="<%= c.characterId %>"><%= c.characterName %></option>
+      <% }) %>
+    </select>
+    <input id="transfer-amount" name="amount" type="number" min="0" class="px-3 py-2 border rounded-xl" placeholder="XP amount" required />
+    <button id="transfer-btn" class="px-4 py-2 bg-slate-900 text-white rounded-xl">Transfer</button>
+  </form>
+</div>
 
-  <div class="bg-white rounded-2xl p-4 shadow-sm">
-    <h2 class="font-semibold mb-2">Transfer XP (Bank → Character)</h2>
-    <form method="POST" action="/xp/transfer" class="grid gap-2 md:flex">
-      <select name="characterId" class="px-3 py-2 border rounded-xl flex-1">
-        <% (chars||[]).forEach(c => { %>
-          <option value="<%= c.characterId %>"><%= c.characterName %></option>
-        <% }) %>
-      </select>
-      <input name="amount" type="number" class="px-3 py-2 border rounded-xl flex-1" placeholder="Amount" />
-      <button class="px-4 py-2 bg-slate-900 text-white rounded-xl">Transfer</button>
-    </form>
-    <p class="text-sm text-slate-500 mt-2">Transfers grant +2 downtime per 1 XP.</p>
-  </div>
-</section>
+<script>
+  (function () {
+    const sel = document.getElementById('xp-character');
+    const amt = document.getElementById('xp-amount');
+    const info = document.getElementById('xp-char-info');
+    const xpEl = document.getElementById('xp-char-xp');
+    const lvlEl = document.getElementById('xp-char-level');
+    const btnAdd = document.getElementById('btn-add');
+    const btnRemove = document.getElementById('btn-remove');
+
+    function validAmount() {
+      const val = Number(amt.value);
+      return Number.isFinite(val) && val > 0;  // must be a positive number
+    }
+
+    function hasCharacter() {
+      return !!sel.value && sel.value !== '';
+    }
+
+    function updateState() {
+      const enable = hasCharacter() && validAmount();
+      btnAdd.disabled = !enable;
+      btnRemove.disabled = !enable;
+    }
+
+    sel.addEventListener('change', () => {
+      const opt = sel.options[sel.selectedIndex];
+      if (opt && opt.dataset) {
+        xpEl.textContent = opt.dataset.xp || '0';
+        lvlEl.textContent = opt.dataset.level || '0';
+        info.classList.remove('hidden');
+      } else {
+        info.classList.add('hidden');
+      }
+      updateState();
+    });
+
+    amt.addEventListener('input', updateState);
+
+    // kick once on load (in case fields are pre-filled by the browser)
+    updateState();
+  })();
+</script>

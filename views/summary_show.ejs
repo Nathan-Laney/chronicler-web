@@ -1,0 +1,74 @@
+<section class="space-y-4">
+    <div class="bg-white rounded-2xl p-4 shadow-sm">
+      <h1 class="text-xl font-semibold"><%= channelName %></h1>
+      <p class="text-sm text-slate-500 break-all"><%= channelId %></p>
+      <a class="inline-block text-sm text-indigo-600 underline mt-1" target="_blank" rel="noopener"
+         href="https://discord.com/channels/<%= process.env.GUILD_ID %>/<%= channelId %>">
+        Open channel in Discord (Does not work on Threads)
+      </a>
+    </div>
+  
+    <div class="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+      <form method="GET" class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+        <label class="text-sm sm:w-48">Model</label>
+        <select name="model" class="px-3 py-2 border rounded-xl flex-1" onchange="this.form.submit()">
+          <% (models || []).forEach(m => { %>
+            <option value="<%= m %>" <%= selectedModel === m ? 'selected' : '' %>><%= m %></option>
+          <% }) %>
+        </select>
+        <!-- <a href="/summaries" class="sm:ml-auto text-indigo-600">← Back to list</a> -->
+      </form>
+  
+      <!-- Actions -->
+      <div class="flex gap-2">
+        <button id="copy-md" type="button" class="px-3 py-2 rounded-xl bg-slate-900 text-white">
+          Copy markdown
+        </button>
+      </div>
+  
+      <!-- Rendered Markdown -->
+      <div id="rendered" class="markdown-body"></div>
+  
+      <!-- Hidden raw markdown for copy -->
+      <textarea id="raw-md" class="hidden"><%= summary %></textarea>
+    </div>
+  </section>
+  
+  <!-- Minimal styling for rendered markdown -->
+  <style>
+    .markdown-body { line-height: 1.7; color: #0f172a; }
+    .markdown-body h1,.markdown-body h2,.markdown-body h3 { font-weight: 700; margin-top: 1.25rem; margin-bottom: .75rem; }
+    .markdown-body p { margin: .75rem 0; }
+    .markdown-body ul, .markdown-body ol { margin: .75rem 0 .75rem 1.25rem; }
+    .markdown-body code { background: #f1f5f9; padding: .1rem .3rem; border-radius: .375rem; }
+    .markdown-body pre { background: #0f172a; color: #fff; padding: 1rem; border-radius: .75rem; overflow:auto; }
+    .markdown-body blockquote { border-left: 4px solid #cbd5e1; padding-left: .75rem; color:#475569; margin: .75rem 0; }
+    .markdown-body a { color: #4f46e5; text-decoration: underline; }
+  </style>
+  
+  <!-- Dependencies: Marked (markdown parser) + DOMPurify (sanitize) -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+  <script>
+    (function () {
+      // Safely pass the markdown from server to client
+      const md = <%- JSON.stringify(summary || "") %>;
+      const html = DOMPurify.sanitize(marked.parse(md));
+      document.getElementById('rendered').innerHTML = html;
+  
+      // Copy raw markdown
+      document.getElementById('copy-md').addEventListener('click', async () => {
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(md);
+          } else {
+            const ta = document.getElementById('raw-md');
+            ta.classList.remove('hidden'); ta.select();
+            document.execCommand('copy');
+            ta.classList.add('hidden');
+          }
+        } catch (e) { /* ignore */ }
+      });
+    })();
+  </script>
+  

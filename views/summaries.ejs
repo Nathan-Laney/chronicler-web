@@ -1,32 +1,23 @@
 <section class="space-y-6">
-  <div class="bg-white rounded-2xl p-4 shadow-sm">
-    <h2 class="font-semibold mb-2">Summaries</h2>
-    <table class="w-full text-sm">
-      <thead><tr class="text-left text-slate-500">
-        <th class="py-2">Channel</th><th>Model</th><th>Context</th><th>Updated</th>
-      </tr></thead>
-      <tbody>
-        <% items.forEach(s => { %>
-          <tr class="border-t">
-            <td class="py-2"><div class="font-medium"><%= s.channelName %></div><div class="text-slate-500"><%= s.channelId %></div></td>
-            <td><%= s.model %></td>
-            <td><%= s.contextLength %></td>
-            <td><%= new Date(s.updatedAt).toLocaleString() %></td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-semibold">Summaries</h1>
   </div>
 
-  <div class="bg-white rounded-2xl p-4 shadow-sm">
-    <h3 class="font-semibold mb-2">Upsert Summary (manual)</h3>
-    <form method="POST" action="/summaries/upsert" class="grid gap-2">
-      <input name="channelId" class="px-3 py-2 border rounded-xl" placeholder="Channel ID" />
-      <input name="channelName" class="px-3 py-2 border rounded-xl" placeholder="Channel Name" />
-      <input name="model" class="px-3 py-2 border rounded-xl" placeholder="Model (e.g., google/gemini-2.0-flash-exp:free)" />
-      <input name="contextLength" type="number" class="px-3 py-2 border rounded-xl" placeholder="Context length" />
-      <textarea name="summary" rows="4" class="px-3 py-2 border rounded-xl" placeholder="Summary text"></textarea>
-      <button class="px-3 py-2 bg-slate-900 text-white rounded-xl">Save</button>
-    </form>
-  </div>
+  <ul class="grid gap-3">
+    <% (channels || []).forEach(c => { %>
+      <li class="bg-white rounded-2xl p-4 shadow-sm">
+        <div class="flex items-center justify-between">
+          <div>
+            <a href="/summaries/<%= c.channelId %>" class="font-semibold text-indigo-600">
+              <%= c.channelName %>
+            </a>
+            <div class="text-sm text-slate-500">
+              <%= c.channelId %> • <%= new Date(c.updatedAt).toLocaleString() %>
+            </div>
+          </div>
+          <div class="text-sm text-slate-500"><%= c.count %> version(s)</div>
+        </div>
+      </li>
+    <% }) %>
+  </ul>
 </section>
