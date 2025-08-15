@@ -51,14 +51,70 @@
 
       <h3 class="font-medium mt-3">Add Player</h3>
       <% if (me && me.id === mission.gmId) { %>
-        <form method="POST" action="/missions/<%= mission.missionId %>/addplayer" class="grid gap-2">
-          <input name="userId" class="px-3 py-2 border rounded-xl" placeholder="User ID"/>
-          <input name="characterId" class="px-3 py-2 border rounded-xl" placeholder="Character ID"/>
-          <button class="px-3 py-2 bg-emerald-600 text-white rounded-xl">Add Player</button>
+        <form id="add-player-form" method="POST" action="/missions/<%= mission.missionId %>/addplayer" class="grid gap-3">
+          <!-- User dropdown -->
+          <select id="add-user" name="userId" class="px-3 py-2 border rounded-xl" required>
+            <option value="" disabled selected>Select user…</option>
+            <% (users || []).forEach(u => { %>
+              <option value="<%= u.id %>"><%= u.name %> (<%= u.id %>)</option>
+            <% }) %>
+          </select>
+
+          <!-- Character dropdown -->
+          <select id="add-character" name="characterId" class="px-3 py-2 border rounded-xl" required disabled>
+            <option value="" disabled selected>Select character…</option>
+          </select>
+
+          <!-- Add Player button -->
+          <button class="px-3 py-2 bg-emerald-600 text-white rounded-xl disabled:opacity-50" disabled id="add-player-btn">
+            Add Player
+          </button>
         </form>
+
+        <script>
+          (function() {
+            const userSel = document.getElementById('add-user');
+            const charSel = document.getElementById('add-character');
+            const submitBtn = document.getElementById('add-player-btn');
+
+            async function loadChars(userId) {
+              charSel.innerHTML = '<option value="" disabled selected>Loading…</option>';
+              charSel.disabled = true;
+              submitBtn.disabled = true;
+              try {
+                const resp = await fetch(`/missions/<%= mission.missionId %>/characters?userId=${encodeURIComponent(userId)}`);
+                const items = await resp.json();
+                charSel.innerHTML = '<option value="" disabled selected>Select character…</option>';
+                items.forEach(c => {
+                  const opt = document.createElement('option');
+                  opt.value = c.characterId;
+                  opt.textContent = c.characterName;
+                  charSel.appendChild(opt);
+                });
+                charSel.disabled = items.length === 0;
+                submitBtn.disabled = items.length === 0;
+                if (items.length === 0) {
+                  const opt = document.createElement('option');
+                  opt.value = '';
+                  opt.textContent = 'No characters found';
+                  charSel.appendChild(opt);
+                }
+              } catch (e) {
+                charSel.innerHTML = '<option value="" disabled selected>Error loading characters</option>';
+              }
+            }
+
+            userSel.addEventListener('change', (e) => {
+              const uid = e.target.value;
+              if (uid) loadChars(uid);
+            });
+          })();
+        </script>
       <% } else { %>
         <p class="text-sm text-slate-500">Only the GM can add or remove players.</p>
       <% } %>
+
+
 
     </div>
 

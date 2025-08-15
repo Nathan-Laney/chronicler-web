@@ -86,7 +86,9 @@ app.use("/xp", requireLogin, require("./routes/xp"));
 app.use("/bank", requireLogin, require("./routes/bank"));
 app.use("/downtime", requireLogin, require("./routes/downtime"));
 app.use("/missions", require("./routes/missions"));
-app.use("/admin", requireLogin, require("./routes/admin"));
+// app.use("/admin", requireLogin, require("./routes/admin")); // Removed admin panel.
+app.use("/admin", (req, res) => res.status(410).send("Gone")); // Removed admin panel.
+
 app.use("/stats", require("./routes/stats"));
 app.use("/summaries", require("./routes/summaries"));
 app.use("/auth", require("./routes/auth"));

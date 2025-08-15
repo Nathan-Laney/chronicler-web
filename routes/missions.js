@@ -3,6 +3,7 @@ const { customAlphabet } = require("nanoid");
 const Mission = require("../models/Mission");
 const Character = require("../models/Character");
 const { resolveChannelMentions, mapDisplayNames } = require("../utils/discord");
+const Profile = require("../models/Profile");
 const nano = customAlphabet("0123456789abcdefghijklmnopqrstuvwxyz", 12);
 
 router.get("/", async (req, res) => {
@@ -37,10 +38,12 @@ router.get("/:id", async (req, res) => {
   const { guildId } = req.context;
 
   // Resolve player display names and channel mentions concurrently
-  const [displayNames, resolved, gmMap] = await Promise.all([
+  const [displayNames, resolved, gmMap, ownerIds, profileUserIds] = await Promise.all([
     mapDisplayNames(guildId, mission.players),
     resolveChannelMentions(guildId, mission.missionName),
-    mapDisplayNames(guildId, [mission.gmId])
+    mapDisplayNames(guildId, [mission.gmId]),
+    Character.distinct("ownerId", { guildId }),
+    Profile.distinct("userId", { guildId }),
   ]);
 
   // Attach pretty mission name channel link(s) for the view
@@ -48,7 +51,14 @@ router.get("/:id", async (req, res) => {
   mission._channelLinks = resolved.channels;  // [{ id, name: "#table-5", url }]
   mission._gmName = gmMap[mission.gmId] || mission.gmId;
 
-  res.render("mission_show", { mission, displayNames });
+  // Build user dropdown: union of owners, profiles, and current mission players
+  const ids = Array.from(new Set([...(ownerIds || []), ...(profileUserIds || []), ...(mission.players || [])]));
+  const nameMap = await mapDisplayNames(guildId, ids);
+  const users = ids
+    .map(id => ({ id, name: nameMap[id] || id }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+    res.render("mission_show", { mission, displayNames, users });
 });
 
 router.post("/:id/rename", async (req, res) => {
@@ -112,5 +122,17 @@ router.post("/:id/removeplayer", async (req, res) => {
   );
   res.redirect(`/missions/${req.params.id}`);
 });
+
+// Return characters for a given user in this guild (JSON)
+router.get("/:id/characters", async (req, res) => {
+  const { guildId } = req.context;
+  const { userId } = req.query;
+  if (!userId) return res.json([]);
+  const chars = await Character.find({ guildId, ownerId: userId })
+    .select("characterId characterName")
+    .sort({ characterName: 1 })
+    .lean();
+  res.json(chars);
+  });
 
 module.exports = router;
