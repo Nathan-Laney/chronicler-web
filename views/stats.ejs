@@ -23,37 +23,31 @@
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   const labels = <%- labels %>;
   const data = <%- counts %>;
+  const analyze = "<%= analyze %>";
 
   const ctx = document.getElementById('chart');
   new Chart(ctx, {
     type: 'bar',
-    data: {
-      labels,
-      datasets: [{ label: 'Characters', data }]
-    },
+    data: { labels, datasets: [{ label: 'Characters', data }] },
     options: {
       responsive: true,
-      maintainAspectRatio: false, // allow canvas to match container height
+      maintainAspectRatio: false,
       plugins: {
-        legend: { display: false }, // save vertical space
+        legend: { display: false },
         tooltip: { mode: 'index', intersect: false }
       },
-      layout: {
-        padding: { top: 8, right: 8, bottom: 8, left: 8 }
-      },
+      layout: { padding: { top: 8, right: 8, bottom: 8, left: 8 } },
       scales: {
         x: {
           ticks: {
-            autoSkip: true,
-            maxRotation: 0,
-            callback: (val, i) => {
-              // keep labels short; show every ~n-th if many
-              const step = labels.length > 20 ? Math.ceil(labels.length / 20) : 1;
-              return i % step === 0 ? labels[i] : '';
-            }
+            // For CLASS charts, show every class label (no autoskip), slight rotation if needed
+            autoSkip: analyze === 'class' ? false : true,
+            maxRotation: analyze === 'class' ? 35 : 0,
+            minRotation: 0
           },
           grid: { display: false }
         },
@@ -65,3 +59,4 @@
     }
   });
 </script>
+
