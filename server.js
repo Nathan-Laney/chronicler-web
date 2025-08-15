@@ -10,6 +10,13 @@ const session = require("express-session");
 const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
 
+// Simple auth gate
+function requireLogin(req, res, next) {
+  if (req.user) return next();
+  // Redirect to Discord login if not authenticated
+  return res.redirect("/auth/discord");
+}
+  
 const app = express();
 
 // --- Passport: Discord OAuth ---
@@ -74,12 +81,12 @@ app.use((req, res, next) => {
 
 // Routes
 app.use("/", require("./routes/index"));
-app.use("/characters", require("./routes/characters"));
-app.use("/xp", require("./routes/xp"));
-app.use("/bank", require("./routes/bank"));
-app.use("/downtime", require("./routes/downtime"));
+app.use("/characters", requireLogin, require("./routes/characters"));
+app.use("/xp", requireLogin, require("./routes/xp"));
+app.use("/bank", requireLogin, require("./routes/bank"));
+app.use("/downtime", requireLogin, require("./routes/downtime"));
 app.use("/missions", require("./routes/missions"));
-app.use("/admin", require("./routes/admin"));
+app.use("/admin", requireLogin, require("./routes/admin"));
 app.use("/stats", require("./routes/stats"));
 app.use("/summaries", require("./routes/summaries"));
 app.use("/auth", require("./routes/auth"));
