@@ -2,13 +2,19 @@ const router = require("express").Router();
 const { customAlphabet } = require("nanoid");
 const Mission = require("../models/Mission");
 const Character = require("../models/Character");
-const { mapDisplayNames } = require("../utils/discord");
+const { resolveChannelMentions, mapDisplayNames } = require("../utils/discord");
 const nano = customAlphabet("0123456789abcdefghijklmnopqrstuvwxyz", 12);
 
 router.get("/", async (req, res) => {
   const { guildId, userId } = req.context;
   const missions = await Mission.find({ guildId }).sort({ missionStatus: 1, missionName: 1 });
   const myChars = await Character.find({ guildId, ownerId: userId }).sort({ characterName: 1 });
+    // Resolve channel mentions in mission names
+  const resolved = await Promise.all(missions.map(m => resolveChannelMentions(guildId, m.missionName)));
+  missions.forEach((m, i) => {
+    m._displayName = resolved[i].display;
+    m._channelLinks = resolved[i].channels; // array of {id,name,url}
+  });
   res.render("missions", { missions, myChars, toast: null });
 });
 
@@ -24,9 +30,19 @@ router.post("/create", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const mission = await Mission.findOne({ missionId: req.params.id });
   if (!mission) throw new Error("Mission not found.");
-  // Build a map of userId -> displayName for the players
-  const guildId = req.context.guildId;
-  const displayNames = await mapDisplayNames(guildId, mission.players);
+
+  const { guildId } = req.context;
+
+  // Resolve player display names and channel mentions concurrently
+  const [displayNames, resolved] = await Promise.all([
+    mapDisplayNames(guildId, mission.players),
+    resolveChannelMentions(guildId, mission.missionName)
+  ]);
+
+  // Attach pretty mission name + channel link(s) for the view
+  mission._displayName = resolved.display;    // e.g. "#table-5" instead of "<#123...>"
+  mission._channelLinks = resolved.channels;  // [{ id, name: "#table-5", url }]
+
   res.render("mission_show", { mission, displayNames });
 });
 

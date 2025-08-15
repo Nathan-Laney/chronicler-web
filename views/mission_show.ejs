@@ -2,8 +2,12 @@
   <div class="bg-white rounded-2xl p-4 shadow-sm">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
-        <h1 class="text-xl font-semibold"><%= mission.missionName %></h1>
-        <div class="text-sm text-slate-500">ID <%= mission.missionId %> • <%= mission.missionStatus %></div>
+        <h1 class="text-xl font-semibold"><%= mission._displayName || mission.missionName %></h1>
+          <% if ((mission._channelLinks||[]).length) { %>
+            <a class="text-sm text-indigo-600 underline" target="_blank" rel="noopener"
+              href="<%= mission._channelLinks[0].url %>">Open channel in Discord</a>
+          <% } %>
+          <div class="text-sm text-slate-500">ID <%= mission.missionId %> • <%= mission.missionStatus %></div>
       </div>
       <form method="POST" action="/missions/<%= mission.missionId %>/delete" onsubmit="return confirm('Delete mission?');">
         <button class="px-3 py-2 bg-rose-600 text-white rounded-xl">Delete</button>

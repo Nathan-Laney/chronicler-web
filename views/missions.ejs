@@ -9,7 +9,11 @@
       <li class="bg-white rounded-2xl p-4 shadow-sm">
         <div class="flex items-center justify-between">
           <div>
-            <a href="/missions/<%= m.missionId %>" class="font-semibold text-indigo-600"><%= m.missionName %></a>
+            <a href="/missions/<%= m.missionId %>" class="font-semibold text-indigo-600"><%= m._displayName || m.missionName %></a>
+            <% if ((m._channelLinks||[]).length) { %>
+              <a class="ml-2 text-sm text-slate-500 underline" target="_blank" rel="noopener"
+                 href="<%= m._channelLinks[0].url %>">Open in Discord</a>
+            <% } %>            
             <div class="text-sm text-slate-500"><%= m.missionStatus %></div>
           </div>
           <div class="text-sm text-slate-500"><%= m.players.length %> players</div>
