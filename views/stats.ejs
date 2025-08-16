@@ -1,4 +1,4 @@
-<section class="bg-white rounded-2xl p-4 shadow-sm">
+<section class="bg-white dark:bg-grv-surface rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-grv-border">
   <h1 class="text-xl font-semibold mb-2">Character Stats</h1>
   <form method="GET" class="flex flex-wrap gap-2 mb-4">
     <label class="text-sm">Analyze
@@ -13,7 +13,7 @@
         <option value="grouped" <%= grouping==='grouped'?'selected':'' %>>Grouped (3-level)</option>
       </select>
     </label>
-    <button class="px-3 py-2 bg-slate-900 text-white rounded-xl">Update</button>
+    <button class="px-3 py-2 bg-slate-900 text-white dark:bg-grv-accent dark:text-grv-bg rounded-xl">Update</button>
   </form>
 
   <!-- Fixed-height container; canvas fills it -->
@@ -21,7 +21,7 @@
     <canvas id="chart" class="w-full h-full"></canvas>
   </div>
 </section>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -29,34 +29,73 @@
   const data = <%- counts %>;
   const analyze = "<%= analyze %>";
 
+  function isDark(){ return document.documentElement.classList.contains('dark'); }
+  function chartTheme(){
+    return isDark()
+      ? { text: '#ebdbb2', grid: 'rgba(235,219,178,0.18)', bar: '#fe8019' } // Gruvbox
+      : { text: '#334155', grid: 'rgba(0,0,0,0.08)',       bar: '#4f46e5' };
+  }
+
   const ctx = document.getElementById('chart');
-  new Chart(ctx, {
-    type: 'bar',
-    data: { labels, datasets: [{ label: 'Characters', data }] },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { mode: 'index', intersect: false }
+  let chart = null;
+
+  function buildChart() {
+    const c = chartTheme();
+    if (chart) { chart.destroy(); }
+    chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Characters',
+          data,
+          backgroundColor: c.bar,
+          borderColor: c.bar,      // keep consistent border
+          borderWidth: 1
+        }]
       },
-      layout: { padding: { top: 8, right: 8, bottom: 8, left: 8 } },
-      scales: {
-        x: {
-          ticks: {
-            // For CLASS charts, show every class label (no autoskip), slight rotation if needed
-            autoSkip: analyze === 'class' ? false : true,
-            maxRotation: analyze === 'class' ? 35 : 0,
-            minRotation: 0
-          },
-          grid: { display: false }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            titleColor: c.text,
+            bodyColor:  c.text
+          }
         },
-        y: {
-          beginAtZero: true,
-          ticks: { precision: 0 }
+        scales: {
+          x: {
+            ticks: {
+              autoSkip: analyze === 'class' ? false : true,
+              maxRotation: analyze === 'class' ? 35 : 0,
+              color: c.text
+            },
+            grid: { display: false }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: { precision: 0, color: c.text },
+            grid: { color: c.grid }
+          }
         }
       }
+    });
+  }
+
+  // Build once
+  buildChart();
+
+  // Rebuild when theme flips (watch <html class="...">)
+  const mo = new MutationObserver(muts => {
+    if (muts.some(m => m.type === 'attributes' && m.attributeName === 'class')) {
+      buildChart();
     }
   });
-</script>
+  mo.observe(document.documentElement, { attributes: true });
 
+  // Optional: if your toggle dispatches a custom event
+  window.addEventListener('themechange', buildChart);
+</script>

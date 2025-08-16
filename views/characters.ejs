@@ -5,13 +5,13 @@
   </div>
   <ul class="grid gap-3">
     <% chars.forEach(c => { %>
-      <li class="bg-white rounded-2xl p-4 shadow-sm">
+      <li class="bg-white dark:bg-grv-surface rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-grv-border">
         <div class="flex items-center justify-between">
           <div>
             <a href="/characters/<%= c.characterId %>" class="font-semibold text-indigo-600"><%= c.characterName %></a>
-            <div class="text-sm text-slate-500">Lvl <%= c.level %> • <%= c.class || 'Unclassed' %></div>
+            <div class="text-sm text-slate-500 dark:text-grv-muted">Lvl <%= c.level %> • <%= c.class || 'Unclassed' %></div>
           </div>
-          <div class="text-right text-sm text-slate-500"><%= c.experience %> XP • DT <%= c.downtime %></div>
+          <div class="text-right text-sm text-slate-500 dark:text-grv-muted"><%= c.experience %> XP • DT <%= c.downtime %></div>
         </div>
       </li>
     <% }) %>

@@ -1,5 +1,5 @@
 <section class="grid gap-6">
-  <div class="bg-white rounded-2xl p-4 shadow-sm">
+  <div class="bg-white dark:bg-grv-surface rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-grv-border">
     <h2 class="font-semibold mb-2">Add Downtime</h2>
     <form method="POST" action="/downtime/add" class="grid gap-2 md:flex">
       <select name="characterId" class="px-3 py-2 border rounded-xl flex-1">
@@ -12,7 +12,7 @@
     </form>
   </div>
 
-  <div class="bg-white rounded-2xl p-4 shadow-sm">
+  <div class="bg-white dark:bg-grv-surface rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-grv-border">
     <h2 class="font-semibold mb-2">Spend Downtime</h2>
     <form method="POST" action="/downtime/spend" class="grid gap-2 md:flex">
       <select name="characterId" class="px-3 py-2 border rounded-xl flex-1">
@@ -22,7 +22,7 @@
       </select>
       <input name="days" type="number" class="px-3 py-2 border rounded-xl flex-1" placeholder="Days" />
       <input name="activity" class="px-3 py-2 border rounded-xl flex-1" placeholder="Activity (optional)" />
-      <button class="px-4 py-2 bg-slate-900 text-white rounded-xl">Spend</button>
+      <button class="px-4 py-2 bg-slate-900 text-white rounded-xl dark:bg-grv-accent dark:text-grv-bg rounded-xl">Spend</button>
     </form>
   </div>
 </section>

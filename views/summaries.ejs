@@ -5,17 +5,17 @@
 
   <ul class="grid gap-3">
     <% (channels || []).forEach(c => { %>
-      <li class="bg-white rounded-2xl p-4 shadow-sm">
+      <li class="bg-white dark:bg-grv-surface rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-grv-border">
         <div class="flex items-center justify-between">
           <div>
             <a href="/summaries/<%= c.channelId %>" class="font-semibold text-indigo-600">
               <%= c.channelName %>
             </a>
-            <div class="text-sm text-slate-500">
+            <div class="text-sm text-slate-500 dark:text-grv-muted">
               <%= c.channelId %> • <%= new Date(c.updatedAt).toLocaleString() %>
             </div>
           </div>
-          <div class="text-sm text-slate-500"><%= c.count %> version(s)</div>
+          <div class="text-sm text-slate-500 dark:text-grv-muted"><%= c.count %> version(s)</div>
         </div>
       </li>
     <% }) %>

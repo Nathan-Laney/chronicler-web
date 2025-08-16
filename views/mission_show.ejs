@@ -1,16 +1,16 @@
 <section class="space-y-6">
-  <div class="bg-white rounded-2xl p-4 shadow-sm">
+  <div class="bg-white dark:bg-grv-surface rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-grv-border">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
         <h1 class="text-xl font-semibold"><%= mission._displayName || mission.missionName %></h1>
           <% if ((mission._channelLinks||[]).length) { %>
-            <a class="text-sm text-indigo-600 underline" target="_blank" rel="noopener"
+            <a class="text-sm text-indigo-600 dark:text-grv-accent underline" target="_blank" rel="noopener"
               href="<%= mission._channelLinks[0].url %>">Open channel in Discord</a>
           <% } %>
-          <p class="text-sm text-slate-500 mt-1">GM: <%= mission._gmName || mission.gmId %></p>
-          <div class="text-sm text-slate-500">ID <%= mission.missionId %> • <%= mission.missionStatus %></div>
+          <p class="text-sm text-slate-500 dark:text-grv-muted mt-1">GM: <%= mission._gmName || mission.gmId %></p>
+          <div class="text-sm text-slate-500 dark:text-grv-muted">ID <%= mission.missionId %> • <%= mission.missionStatus %></div>
       </div>
-      <form method="POST" action="/missions/<%= mission.missionId %>/delete" onsubmit="return confirm('Delete mission?');">
+      <form method="POST" action="/missions/<%= mission.missionId %>/delete" data-confirm data-message="Are you sure you want to delete this mission?" data-description="This action can’t be undone.">
         <button class="px-3 py-2 bg-rose-600 text-white rounded-xl">Delete</button>
       </form>
     </div>
@@ -20,17 +20,17 @@
       <form method="POST" action="/missions/<%= mission.missionId %>/rename" class="flex gap-2">
         <input type="hidden" name="current_name" value="<%= mission.missionName %>"/>
         <input name="new_name" class="px-3 py-2 border rounded-xl flex-1" placeholder="New name"/>
-        <button class="px-3 py-2 bg-slate-900 text-white rounded-xl">Rename</button>
+        <button class="px-3 py-2 bg-slate-900 text-white rounded-xl dark:bg-grv-accent dark:text-grv-bg">Rename</button>
       </form>
       <form method="POST" action="/missions/<%= mission.missionId %>/description" class="flex gap-2">
         <input name="description" class="px-3 py-2 border rounded-xl flex-1" placeholder="New description"/>
-        <button class="px-3 py-2 bg-slate-900 text-white rounded-xl">Save Description</button>
+        <button class="px-3 py-2 bg-slate-900 text-white dark:bg-grv-accent dark:text-grv-bg rounded-xl">Save Description</button>
       </form>
     </div>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <div class="bg-white dark:bg-grv-surface rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-grv-border">
       <h2 class="font-semibold mb-2">Players</h2>
       <ul class="text-sm space-y-1">
         <% mission.characterNames.forEach((cn, idx) => { %>
@@ -39,10 +39,10 @@
               <%= cn %> (<%= (displayNames && displayNames[mission.players[idx]]) || mission.players[idx] %>)
             </span>
             <% if (me && me.id === mission.gmId) { %>
-              <form method="POST" action="/missions/<%= mission.missionId %>/removeplayer">
+              <form method="POST" action="/missions/<%= mission.missionId %>/removeplayer" data-confirm data-message="Remove this player from the mission?" data-description="">
                 <input type="hidden" name="userId" value="<%= mission.players[idx] %>"/>
                 <input type="hidden" name="characterId" value="<%= mission.characterIds[idx] %>"/>
-                <button class="text-rose-600">remove</button>
+                <button class="text-rose-600 dark:text-rose-600">remove</button>
               </form>
             <% } %>
           </li>
@@ -111,21 +111,21 @@
           })();
         </script>
       <% } else { %>
-        <p class="text-sm text-slate-500">Only the GM can add or remove players.</p>
+        <p class="text-sm text-slate-500 dark:text-grv-muted">Only the GM can add or remove players.</p>
       <% } %>
 
 
 
     </div>
 
-    <div class="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+    <div class="bg-white dark:bg-grv-surface rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-grv-border space-y-3">
       <h2 class="font-semibold">Status</h2>
       <% if (me && me.id === mission.gmId) { %>
         <form method="POST" action="/missions/<%= mission.missionId %>/complete">
           <button class="px-3 py-2 bg-indigo-600 text-white rounded-xl">Mark Complete</button>
         </form>
       <% } else { %>
-        <p class="text-sm text-slate-500">Only the GM can mark this mission complete.</p>
+        <p class="text-sm text-slate-500 dark:text-grv-muted">Only the GM can mark this mission complete.</p>
       <% } %>
     </div>
   </div>

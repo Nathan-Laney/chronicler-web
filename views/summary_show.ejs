@@ -1,14 +1,14 @@
 <section class="space-y-4">
-    <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <div class="bg-white dark:bg-grv-surface rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-grv-border">
       <h1 class="text-xl font-semibold"><%= channelName %></h1>
-      <p class="text-sm text-slate-500 break-all"><%= channelId %></p>
-      <a class="inline-block text-sm text-indigo-600 underline mt-1" target="_blank" rel="noopener"
+      <p class="text-sm text-slate-500 dark:text-grv-muted break-all"><%= channelId %></p>
+      <a class="inline-block text-sm text-indigo-600 dark:text-grv-accent underline mt-1" target="_blank" rel="noopener"
          href="https://discord.com/channels/<%= process.env.GUILD_ID %>/<%= channelId %>">
         Open channel in Discord (Does not work on Threads)
       </a>
     </div>
   
-    <div class="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+    <div class="bg-white dark:bg-grv-surface rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-grv-border space-y-3">
       <form method="GET" class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
         <label class="text-sm sm:w-48">Model</label>
         <select name="model" class="px-3 py-2 border rounded-xl flex-1" onchange="this.form.submit()">
@@ -16,12 +16,12 @@
             <option value="<%= m %>" <%= selectedModel === m ? 'selected' : '' %>><%= m %></option>
           <% }) %>
         </select>
-        <!-- <a href="/summaries" class="sm:ml-auto text-indigo-600">← Back to list</a> -->
+        <!-- <a href="/summaries" class="sm:ml-auto text-indigo-600 dark:text-grv-accent">← Back to list</a> -->
       </form>
   
       <!-- Actions -->
       <div class="flex gap-2">
-        <button id="copy-md" type="button" class="px-3 py-2 rounded-xl bg-slate-900 text-white">
+        <button id="copy-md" type="button" class="px-3 py-2 rounded-xl bg-slate-900 text-white dark:bg-grv-accent dark:text-grv-bg rounded-xl">
           Copy markdown
         </button>
       </div>
@@ -36,6 +36,7 @@
   
   <!-- Minimal styling for rendered markdown -->
   <style>
+    /* Light theme (unchanged) */
     .markdown-body { line-height: 1.7; color: #0f172a; }
     .markdown-body h1,.markdown-body h2,.markdown-body h3 { font-weight: 700; margin-top: 1.25rem; margin-bottom: .75rem; }
     .markdown-body p { margin: .75rem 0; }
@@ -44,7 +45,19 @@
     .markdown-body pre { background: #0f172a; color: #fff; padding: 1rem; border-radius: .75rem; overflow:auto; }
     .markdown-body blockquote { border-left: 4px solid #cbd5e1; padding-left: .75rem; color:#475569; margin: .75rem 0; }
     .markdown-body a { color: #4f46e5; text-decoration: underline; }
+
+    /* Dark theme (Gruvbox) */
+    .dark .markdown-body { color: #ebdbb2; }                          /* grv.fg */
+    .dark .markdown-body a { color: #fe8019; }                        /* grv.accent */
+    .dark .markdown-body a:hover { color: #d65d0e; }                  /* grv.accent2 */
+    .dark .markdown-body code { background: #3c3836; color: #ebdbb2; }/* grv.border + fg */
+    .dark .markdown-body pre  { background: #1d2021; color: #ebdbb2; border: 1px solid #3c3836; }
+    .dark .markdown-body blockquote { border-left-color: #504945; color: #bdae93; } /* muted */
+    .dark .markdown-body hr { border-color: #3c3836; }
+    .dark .markdown-body table { border-color: #3c3836; }
+    .dark .markdown-body th, .dark .markdown-body td { border-color: #3c3836; }
   </style>
+
   
   <!-- Dependencies: Marked (markdown parser) + DOMPurify (sanitize) -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>

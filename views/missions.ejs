@@ -6,17 +6,17 @@
 
   <ul class="grid gap-3">
     <% missions.forEach(m => { %>
-      <li class="bg-white rounded-2xl p-4 shadow-sm">
+      <li class="bg-white dark:bg-grv-surface rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-grv-border">
         <div class="flex items-center justify-between">
           <div>
             <a href="/missions/<%= m.missionId %>" class="font-semibold text-indigo-600"><%= m._displayName || m.missionName %></a>
             <% if ((m._channelLinks||[]).length) { %>
-              <a class="ml-2 text-sm text-slate-500 underline" target="_blank" rel="noopener"
+              <a class="ml-2 text-sm text-slate-500 dark:text-grv-muted underline" target="_blank" rel="noopener"
                  href="<%= m._channelLinks[0].url %>">Open in Discord</a>
             <% } %>            
-            <div class="text-sm text-slate-500"><%= m.missionStatus %></div>
+            <div class="text-sm text-slate-500 dark:text-grv-muted"><%= m.missionStatus %></div>
           </div>
-          <div class="text-sm text-right text-slate-500 leading-tight">
+          <div class="text-sm text-right text-slate-500 dark:text-grv-muted leading-tight">
             <div>GM: <%= m._gmName || m.gmId %></div>
             <div><%= m.players.length %> players</div>
           </div>
