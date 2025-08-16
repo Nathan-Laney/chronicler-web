@@ -1,4 +1,4 @@
-<section class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-slate-700">
+<section class="bg-white dark:bg-grv-surface rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-grv-border">
   <h1 class="text-xl font-semibold mb-2">Character Stats</h1>
   <form method="GET" class="flex flex-wrap gap-2 mb-4">
     <label class="text-sm">Analyze
@@ -13,7 +13,7 @@
         <option value="grouped" <%= grouping==='grouped'?'selected':'' %>>Grouped (3-level)</option>
       </select>
     </label>
-    <button class="px-3 py-2 bg-slate-900 text-white rounded-xl">Update</button>
+    <button class="px-3 py-2 bg-slate-900 text-white dark:bg-grv-accent dark:text-grv-bg rounded-xl">Update</button>
   </form>
 
   <!-- Fixed-height container; canvas fills it -->
@@ -22,6 +22,8 @@
   </div>
 </section>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   const labels = <%- labels %>;
   const data = <%- counts %>;
@@ -29,37 +31,71 @@
 
   function isDark(){ return document.documentElement.classList.contains('dark'); }
   function chartTheme(){
-    if (isDark()) {
-      return {
-        text: '#ebdbb2',               // grv.fg
-        grid: 'rgba(235,219,178,0.18)',// faded fg for grid
-        bar:  '#fe8019'                // grv.accent
-      };
-    } else {
-      return {
-        text: '#334155',
-        grid: 'rgba(0,0,0,0.08)',
-        bar:  '#4f46e5'
-      };
-    }
+    return isDark()
+      ? { text: '#ebdbb2', grid: 'rgba(235,219,178,0.18)', bar: '#fe8019' } // Gruvbox
+      : { text: '#334155', grid: 'rgba(0,0,0,0.08)',       bar: '#4f46e5' };
   }
 
-  const c = chartTheme();
   const ctx = document.getElementById('chart');
+  let chart = null;
 
-  new Chart(ctx, {
-    type: 'bar',
-    data: { labels, datasets: [{ label: 'Characters', data, backgroundColor: c.bar }] },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { mode: 'index', intersect: false, titleColor: c.text, bodyColor: c.text }
+  function buildChart() {
+    const c = chartTheme();
+    if (chart) { chart.destroy(); }
+    chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Characters',
+          data,
+          backgroundColor: c.bar,
+          borderColor: c.bar,      // keep consistent border
+          borderWidth: 1
+        }]
       },
-      scales: {
-        x: { ticks: { autoSkip: analyze === 'class' ? false : true, maxRotation: analyze==='class'?35:0, color: c.text }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { precision: 0, color: c.text }, grid: { color: c.grid } }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            titleColor: c.text,
+            bodyColor:  c.text
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              autoSkip: analyze === 'class' ? false : true,
+              maxRotation: analyze === 'class' ? 35 : 0,
+              color: c.text
+            },
+            grid: { display: false }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: { precision: 0, color: c.text },
+            grid: { color: c.grid }
+          }
+        }
       }
+    });
+  }
+
+  // Build once
+  buildChart();
+
+  // Rebuild when theme flips (watch <html class="...">)
+  const mo = new MutationObserver(muts => {
+    if (muts.some(m => m.type === 'attributes' && m.attributeName === 'class')) {
+      buildChart();
     }
   });
+  mo.observe(document.documentElement, { attributes: true });
+
+  // Optional: if your toggle dispatches a custom event
+  window.addEventListener('themechange', buildChart);
 </script>

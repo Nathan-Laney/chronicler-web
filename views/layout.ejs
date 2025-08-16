@@ -50,12 +50,12 @@
     /* Muted text helper */
     .dark .text-muted { @apply text-grv-muted; }
 
-    /* Inputs + selects */
     .dark input,
     .dark select,
     .dark textarea {
-      @apply bg-grv-surface text-grv-fg border border-grv-border;
+      @apply bg-grv-bg text-grv-fg border border-grv-border;
     }
+
 
     /* Buttons that were “neutral” get a subtle dark treatment by default */
     .dark .btn-default {
@@ -72,6 +72,7 @@
     .dark a[class*="bg-"] {
       @apply text-grv-fg;
     }
+
   }
 
 </style>
@@ -123,7 +124,7 @@
               <span>Signed in as <span class="font-medium"><%= name %></span></span>
             </div>
             <form method="POST" action="/auth/logout">
-              <button class="px-3 py-2 rounded-xl bg-slate-900 text-white">Logout</button>
+              <button class="px-3 py-2 rounded-xl bg-slate-900 text-white dark:bg-grv-accent dark:text-grv-bg">Logout</button>
             </form>
           <% } else { %>
             <a class="px-3 py-2 rounded-xl bg-indigo-600 text-white dark:text-white" href="/auth/discord">Login with Discord</a>
@@ -243,6 +244,103 @@
     })();
   </script>
 
-  
+  <!-- Confirm Modal -->
+<div id="confirm-overlay" class="fixed inset-0 hidden z-50">
+  <!-- backdrop -->
+  <div class="absolute inset-0 bg-black/50"></div>
+
+  <!-- dialog -->
+  <div class="relative mx-auto mt-24 w-[90%] max-w-sm rounded-2xl 
+              bg-white dark:bg-grv-surface border border-slate-200 dark:border-grv-border
+              shadow-lg p-4">
+              <h3 id="confirm-title" class="text-lg font-semibold mb-2">Are you sure?</h3>
+              <p id="confirm-desc" class="text-sm text-slate-600 dark:text-grv-muted mb-4">This action can’t be undone.</p>
+                  <div class="flex justify-end gap-2">
+      <button id="confirm-no" type="button"
+        class="px-3 py-2 rounded-xl btn-default hover:bg-slate-100 dark:hover:bg-[#3a3734]">
+        No
+      </button>
+      <button id="confirm-yes" type="button"
+        class="px-3 py-2 rounded-xl bg-rose-600 text-white dark:text-grv-bg">
+        Yes
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    let pendingAction = null; // function to run on confirm
+
+    const overlay = document.getElementById('confirm-overlay');
+    const btnYes  = document.getElementById('confirm-yes');
+    const btnNo   = document.getElementById('confirm-no');
+
+    function open(actionFn) {
+      pendingAction = actionFn;
+      overlay.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+    }
+    function close() {
+      overlay.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+      pendingAction = null;
+    }
+
+    btnNo.addEventListener('click', close);
+    btnYes.addEventListener('click', function () {
+      const fn = pendingAction;
+      close();
+      if (typeof fn === 'function') fn();
+    });
+    overlay.addEventListener('click', (e) => {
+      // click outside dialog closes
+      const dialog = overlay.querySelector('div.relative');
+      if (!dialog.contains(e.target)) close();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+
+    // Intercept submits on anything with data-confirm
+    document.addEventListener('submit', function (e) {
+  const form = e.target;
+  if (form.matches('[data-confirm]')) {
+    e.preventDefault();
+    const title = form.getAttribute('data-message') || 'Are you sure?';
+    const desc  = form.getAttribute('data-description');
+    document.getElementById('confirm-title').textContent = title;
+
+    const descEl = document.getElementById('confirm-desc');
+    if (desc === null) {
+      // no override, use default text
+      descEl.textContent = 'This action can’t be undone.';
+      descEl.classList.remove('hidden');
+    } else if (desc === '') {
+      // explicitly blank: hide the element
+      descEl.textContent = '';
+      descEl.classList.add('hidden');
+    } else {
+      // custom text
+      descEl.textContent = desc;
+      descEl.classList.remove('hidden');
+    }
+
+    open(() => form.submit());
+  }
+
+
+    });
+
+    // Intercept clicks on links/buttons that navigate and carry data-confirm
+    document.addEventListener('click', function (e) {
+      const el = e.target.closest('[data-confirm][data-href]');
+      if (el) {
+        e.preventDefault();
+        const href = el.getAttribute('data-href');
+        open(() => { window.location.assign(href); });
+      }
+    });
+  })();
+</script>
+
 </body>
 </html>
