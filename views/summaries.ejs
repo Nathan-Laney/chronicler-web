@@ -5,7 +5,7 @@
 
   <ul class="grid gap-3">
     <% (channels || []).forEach(c => { %>
-      <li class="bg-white rounded-2xl p-4 shadow-sm">
+      <li class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-slate-700">
         <div class="flex items-center justify-between">
           <div>
             <a href="/summaries/<%= c.channelId %>" class="font-semibold text-indigo-600">

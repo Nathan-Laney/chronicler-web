@@ -1,4 +1,4 @@
-<section class="bg-white rounded-2xl p-4 shadow-sm">
+<section class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-slate-700">
   <h1 class="text-xl font-semibold mb-2">Character Stats</h1>
   <form method="GET" class="flex flex-wrap gap-2 mb-4">
     <label class="text-sm">Analyze
@@ -21,42 +21,45 @@
     <canvas id="chart" class="w-full h-full"></canvas>
   </div>
 </section>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   const labels = <%- labels %>;
   const data = <%- counts %>;
   const analyze = "<%= analyze %>";
 
+  function isDark(){ return document.documentElement.classList.contains('dark'); }
+  function chartTheme(){
+    if (isDark()) {
+      return {
+        text: '#ebdbb2',               // grv.fg
+        grid: 'rgba(235,219,178,0.18)',// faded fg for grid
+        bar:  '#fe8019'                // grv.accent
+      };
+    } else {
+      return {
+        text: '#334155',
+        grid: 'rgba(0,0,0,0.08)',
+        bar:  '#4f46e5'
+      };
+    }
+  }
+
+  const c = chartTheme();
   const ctx = document.getElementById('chart');
+
   new Chart(ctx, {
     type: 'bar',
-    data: { labels, datasets: [{ label: 'Characters', data }] },
+    data: { labels, datasets: [{ label: 'Characters', data, backgroundColor: c.bar }] },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
+      responsive: true, maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: { mode: 'index', intersect: false }
+        tooltip: { mode: 'index', intersect: false, titleColor: c.text, bodyColor: c.text }
       },
-      layout: { padding: { top: 8, right: 8, bottom: 8, left: 8 } },
       scales: {
-        x: {
-          ticks: {
-            // For CLASS charts, show every class label (no autoskip), slight rotation if needed
-            autoSkip: analyze === 'class' ? false : true,
-            maxRotation: analyze === 'class' ? 35 : 0,
-            minRotation: 0
-          },
-          grid: { display: false }
-        },
-        y: {
-          beginAtZero: true,
-          ticks: { precision: 0 }
-        }
+        x: { ticks: { autoSkip: analyze === 'class' ? false : true, maxRotation: analyze==='class'?35:0, color: c.text }, grid: { display: false } },
+        y: { beginAtZero: true, ticks: { precision: 0, color: c.text }, grid: { color: c.grid } }
       }
     }
   });
 </script>
-

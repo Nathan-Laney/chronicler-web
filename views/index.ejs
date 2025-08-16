@@ -1,11 +1,11 @@
 <section class="space-y-6">
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-slate-700">
       <h2 class="font-semibold mb-2">Your Bank</h2>
       <p class="text-3xl font-bold"><%= (profile && profile.experience) || 0 %> XP</p>
       <a href="/bank" class="mt-3 inline-block text-indigo-600">View bank →</a>
     </div>
-    <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-slate-700">
       <h2 class="font-semibold mb-2">Characters</h2>
       <ul class="divide-y">
         <% (chars||[]).slice(0,5).forEach(c => { %>
@@ -17,7 +17,7 @@
       </ul>
       <a href="/characters" class="mt-3 inline-block text-indigo-600">Manage characters →</a>
     </div>
-    <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-slate-700">
       <h2 class="font-semibold mb-2">Your Active Missions (GM)</h2>
       <ul class="text-sm list-disc pl-5">
         <% (missions||[]).slice(0,5).forEach(m => { %>

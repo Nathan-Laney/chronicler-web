@@ -4,11 +4,82 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>The Chronicler Web</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>tailwind.config = { theme: { extend: { } } };</script>
+<!-- Set dark class before paint -->
+  <script>
+    (function () {
+      try {
+        const saved = localStorage.getItem('theme');
+        const wantDark = saved ? (saved === 'dark') : true; // default to dark
+        document.documentElement.classList.toggle('dark', wantDark);
+      } catch (e) {}
+    })();
+  </script>
+
+  
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  // Configure Tailwind AFTER loading the CDN script
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          grv: {
+            bg:      '#282828', // background
+            surface: '#32302f', // cards
+            border:  '#3c3836', // borders
+            fg:      '#ebdbb2', // primary text
+            muted:   '#bdae93', // secondary text
+            accent:  '#fe8019', // orange
+            accent2: '#d65d0e'  // darker orange (hover)
+          }
+        }
+      }
+    }
+  }
+</script>
+<style type="text/tailwindcss">
+  @layer base {
+    /* Global defaults in dark mode */
+    .dark body { @apply bg-grv-bg text-grv-fg; }
+
+    /* Links: orange accent in dark, keep your existing indigo in light */
+    .dark a { @apply text-grv-accent; }
+    .dark a:hover { @apply text-grv-accent2; }
+
+    /* Muted text helper */
+    .dark .text-muted { @apply text-grv-muted; }
+
+    /* Inputs + selects */
+    .dark input,
+    .dark select,
+    .dark textarea {
+      @apply bg-grv-surface text-grv-fg border border-grv-border;
+    }
+
+    /* Buttons that were “neutral” get a subtle dark treatment by default */
+    .dark .btn-default {
+      @apply bg-grv-surface text-grv-fg border border-grv-border hover:bg-[#3a3734];
+    }
+      /* Buttons in dark mode: use Gruvbox foreground text color */
+    .dark button {
+      @apply text-grv-fg;
+    }
+
+    /* Anchor tags styled as buttons (with background classes) */
+    .dark a.bg-indigo-600,
+    .dark a.bg-slate-900,
+    .dark a[class*="bg-"] {
+      @apply text-grv-fg;
+    }
+  }
+
+</style>
+
+
 </head>
-<body class="bg-slate-50 text-slate-900">
-  <header class="sticky top-0 z-10 bg-white/80 backdrop-blur border-b">
+<body class="bg-white text-slate-900 dark:bg-grv-bg dark:text-grv-fg">
+  <header class="sticky top-0 z-10 bg-white dark:bg-grv-bg border-b border-slate-200 dark:border-grv-border">
     <div class="max-w-5xl mx-auto px-3">
       <div class="flex items-center justify-between h-14">
         <!-- Brand -->
@@ -16,24 +87,34 @@
   
         <!-- Desktop nav -->
         <nav class="hidden md:flex items-center gap-2">
-          <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/">Dashboard</a>
+          <a class="px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]" href="/">Dashboard</a>
           
           <% if (me) { %>
-            <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/characters">Characters</a>
-            <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/xp">XP</a>
-            <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/downtime">Downtime</a>
-            <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/bank">Bank</a>
+            <a class="px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]" href="/characters">Characters</a>
+            <a class="px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]" href="/xp">XP</a>
+            <a class="px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]" href="/downtime">Downtime</a>
+            <a class="px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]" href="/bank">Bank</a>
           <% } %>
 
-          <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/missions">Missions</a>
-          <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/stats">Stats</a>
-          <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/summaries">Summaries</a>
+          <a class="px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]" href="/missions">Missions</a>
+          <a class="px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]" href="/stats">Stats</a>
+          <a class="px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]" href="/summaries">Summaries</a>
   
           <% if (me && OWNER_ID && me.id === OWNER_ID) { %>
-            <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/sitelogs">Logs</a>
+            <a class="px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]" href="/sitelogs">Logs</a>
           <% } %>
         </nav>
-  
+        <!-- Desktop theme toggle -->
+        <button id="theme-toggle" class="hidden md:inline-flex p-2 rounded-lg hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734] hover:bg-slate-100 dark:hover:bg-[#3a3734]" title="Toggle theme" aria-label="Toggle theme">
+          <!-- Sun / Moon icons -->
+          <svg id="icon-sun" class="h-5 w-5 hidden dark:inline" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0-1.414 1.414M7.05 16.95 5.636 18.364M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+          </svg>
+          <svg id="icon-moon" class="h-5 w-5 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          </svg>
+        </button>
+
         <!-- Desktop auth -->
         <div class="hidden md:flex items-center gap-3">
           <% if (me) { %>
@@ -45,13 +126,13 @@
               <button class="px-3 py-2 rounded-xl bg-slate-900 text-white">Logout</button>
             </form>
           <% } else { %>
-            <a class="px-3 py-2 rounded-xl bg-indigo-600 text-white" href="/auth/discord">Login with Discord</a>
+            <a class="px-3 py-2 rounded-xl bg-indigo-600 text-white dark:text-white" href="/auth/discord">Login with Discord</a>
           <% } %>
         </div>
   
         <!-- Mobile menu button -->
         <button id="nav-toggle"
-                class="md:hidden p-2 rounded-lg hover:bg-slate-100"
+                class="md:hidden p-2 rounded-lg hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]"
                 aria-label="Toggle menu" aria-controls="mobile-menu" aria-expanded="false">
           <!-- Icon -->
           <svg id="icon-open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
@@ -65,27 +146,31 @@
     </div>
   
     <!-- Mobile menu (collapsible) -->
-    <div id="mobile-menu" class="md:hidden hidden border-t">
+    <div id="mobile-menu" class="md:hidden hidden border-t dark:border-grv-border">
       <nav class="max-w-5xl mx-auto px-3 py-2 grid gap-1">
-        <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/">Dashboard</a>
+        <a class="px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]" href="/">Dashboard</a>
   
         <% if (me) { %>
-          <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/characters">Characters</a>
-          <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/xp">XP</a>
-          <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/downtime">Downtime</a>
-          <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/bank">Bank</a>
+          <a class="px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]" href="/characters">Characters</a>
+          <a class="px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]" href="/xp">XP</a>
+          <a class="px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]" href="/downtime">Downtime</a>
+          <a class="px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]" href="/bank">Bank</a>
         <% } %>
 
-        <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/missions">Missions</a>
-        <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/stats">Stats</a>
-        <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/summaries">Summaries</a>
+        <a class="px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]" href="/missions">Missions</a>
+        <a class="px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]" href="/stats">Stats</a>
+        <a class="px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]" href="/summaries">Summaries</a>
   
         <% if (me && OWNER_ID && me.id === OWNER_ID) { %>
-          <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/sitelogs">Logs</a>
+          <a class="px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734]" href="/sitelogs">Logs</a>
         <% } %>
   
-        <div class="border-t my-2"></div>
+        <div class="border-t my-2 border-slate-200 dark:border-grv-border"></div>
   
+        <button id="theme-toggle-mobile" class="md:hidden px-3 py-2 rounded-xl hover:bg-slate-100 hover:bg-slate-100 dark:hover:bg-[#3a3734] text-left">
+          Toggle theme
+        </button>        
+        
         <% if (me) { %>
           <div class="flex items-center justify-between">
             <div class="text-sm text-slate-600">
@@ -97,7 +182,7 @@
             </form>
           </div>
         <% } else { %>
-          <a class="px-3 py-2 rounded-xl bg-indigo-600 text-white text-center" href="/auth/discord">Login with Discord</a>
+          <a class="px-3 py-2 rounded-xl bg-indigo-600 text-white dark:text-white text-center" href="/auth/discord">Login with Discord</a>
         <% } %>
       </nav>
     </div>
@@ -106,7 +191,7 @@
   <main class="max-w-5xl mx-auto p-4">
     <%- body %>
   </main>
-  <footer class="max-w-5xl mx-auto p-6 text-center text-sm text-slate-500">
+  <footer class="max-w-5xl mx-auto p-6 text-center text-sm text-slate-500 dark:text-grv-muted">
     <p>© <%= new Date().getFullYear() %> The Chronicler Web</p>
   </footer>
 
@@ -143,6 +228,21 @@
       });
     })();
   </script>
+  <script>
+    (function () {
+      function setTheme(next) {
+        document.documentElement.classList.toggle('dark', next === 'dark');
+        try { localStorage.setItem('theme', next); } catch (e) {}
+      }
+      function toggleTheme() {
+        const dark = document.documentElement.classList.contains('dark');
+        setTheme(dark ? 'light' : 'dark');
+      }
+      document.getElementById('theme-toggle')?.addEventListener('click', toggleTheme);
+      document.getElementById('theme-toggle-mobile')?.addEventListener('click', toggleTheme);
+    })();
+  </script>
+
   
 </body>
 </html>

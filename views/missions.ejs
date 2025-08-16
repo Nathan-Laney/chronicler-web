@@ -6,7 +6,7 @@
 
   <ul class="grid gap-3">
     <% missions.forEach(m => { %>
-      <li class="bg-white rounded-2xl p-4 shadow-sm">
+      <li class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-slate-700">
         <div class="flex items-center justify-between">
           <div>
             <a href="/missions/<%= m.missionId %>" class="font-semibold text-indigo-600"><%= m._displayName || m.missionName %></a>

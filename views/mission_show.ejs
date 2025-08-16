@@ -1,5 +1,5 @@
 <section class="space-y-6">
-  <div class="bg-white rounded-2xl p-4 shadow-sm">
+  <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-slate-700">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
         <h1 class="text-xl font-semibold"><%= mission._displayName || mission.missionName %></h1>
@@ -30,7 +30,7 @@
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-slate-700">
       <h2 class="font-semibold mb-2">Players</h2>
       <ul class="text-sm space-y-1">
         <% mission.characterNames.forEach((cn, idx) => { %>
@@ -111,21 +111,21 @@
           })();
         </script>
       <% } else { %>
-        <p class="text-sm text-slate-500">Only the GM can add or remove players.</p>
+        <p class="text-sm text-slate-500 dark:text-muted">Only the GM can add or remove players.</p>
       <% } %>
 
 
 
     </div>
 
-    <div class="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm dark:shadow-none border border-slate-200 dark:border-slate-700 space-y-3">
       <h2 class="font-semibold">Status</h2>
       <% if (me && me.id === mission.gmId) { %>
         <form method="POST" action="/missions/<%= mission.missionId %>/complete">
           <button class="px-3 py-2 bg-indigo-600 text-white rounded-xl">Mark Complete</button>
         </form>
       <% } else { %>
-        <p class="text-sm text-slate-500">Only the GM can mark this mission complete.</p>
+        <p class="text-sm text-slate-500 dark:text-muted">Only the GM can mark this mission complete.</p>
       <% } %>
     </div>
   </div>
