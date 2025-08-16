@@ -9,48 +9,140 @@
 </head>
 <body class="bg-slate-50 text-slate-900">
   <header class="sticky top-0 z-10 bg-white/80 backdrop-blur border-b">
-    <nav class="max-w-5xl mx-auto flex items-center gap-2 p-3 overflow-x-auto">
-      <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/">Dashboard</a>
-      <% if (me) { %>
-        <!-- Only visible when logged in -->
-        <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/characters">Characters</a>
-        <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/xp">XP</a>
-        <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/downtime">Downtime</a>
-        <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/bank">Bank</a>
-        <!-- <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/admin">Admin</a> -->
-         <!-- ADMIN PANEL REMOVED -->
-      <% } %>
-      <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/missions">Missions</a>
-      <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/stats">Stats</a>
-      <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/summaries">Summaries</a>
+    <div class="max-w-5xl mx-auto px-3">
+      <div class="flex items-center justify-between h-14">
+        <!-- Brand -->
+        <a href="/" class="font-semibold">Chronicler</a>
+  
+        <!-- Desktop nav -->
+        <nav class="hidden md:flex items-center gap-2">
+          <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/">Dashboard</a>
+          
+          <% if (me) { %>
+            <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/characters">Characters</a>
+            <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/xp">XP</a>
+            <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/downtime">Downtime</a>
+            <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/bank">Bank</a>
+          <% } %>
 
-      <% if (me && me.id === OWNER_ID) { %>
-        <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/sitelogs">Logs</a>
-      <% } %>      
-      
-    
-      <div class="ml-auto flex items-center gap-3">
-        <% if (me) { %>
-          <div class="flex items-center gap-2 text-sm text-slate-600">
-            <% const name = me.global_name || me.username; %>
-            <span>Signed in as <span class="font-medium"><%= name %></span></span>
-          </div>
-          <form method="POST" action="/auth/logout">
-            <button class="px-3 py-2 rounded-xl bg-slate-900 text-white">Logout</button>
-          </form>
-        <% } else { %>
-          <a class="px-3 py-2 rounded-xl bg-indigo-600 text-white" href="/auth/discord">Login</a>
-        <% } %>
+          <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/missions">Missions</a>
+          <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/stats">Stats</a>
+          <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/summaries">Summaries</a>
+  
+          <% if (me && OWNER_ID && me.id === OWNER_ID) { %>
+            <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/sitelogs">Logs</a>
+          <% } %>
+        </nav>
+  
+        <!-- Desktop auth -->
+        <div class="hidden md:flex items-center gap-3">
+          <% if (me) { %>
+            <div class="text-sm text-slate-600">
+              <% const name = me.global_name || me.username; %>
+              <span>Signed in as <span class="font-medium"><%= name %></span></span>
+            </div>
+            <form method="POST" action="/auth/logout">
+              <button class="px-3 py-2 rounded-xl bg-slate-900 text-white">Logout</button>
+            </form>
+          <% } else { %>
+            <a class="px-3 py-2 rounded-xl bg-indigo-600 text-white" href="/auth/discord">Login with Discord</a>
+          <% } %>
+        </div>
+  
+        <!-- Mobile menu button -->
+        <button id="nav-toggle"
+                class="md:hidden p-2 rounded-lg hover:bg-slate-100"
+                aria-label="Toggle menu" aria-controls="mobile-menu" aria-expanded="false">
+          <!-- Icon -->
+          <svg id="icon-open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+               viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round"
+               stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          <svg id="icon-close" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none"
+               viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round"
+               stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
-    </nav>
-    
-    
+    </div>
+  
+    <!-- Mobile menu (collapsible) -->
+    <div id="mobile-menu" class="md:hidden hidden border-t">
+      <nav class="max-w-5xl mx-auto px-3 py-2 grid gap-1">
+        <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/">Dashboard</a>
+  
+        <% if (me) { %>
+          <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/characters">Characters</a>
+          <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/xp">XP</a>
+          <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/downtime">Downtime</a>
+          <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/bank">Bank</a>
+        <% } %>
+
+        <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/missions">Missions</a>
+        <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/stats">Stats</a>
+        <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/summaries">Summaries</a>
+  
+        <% if (me && OWNER_ID && me.id === OWNER_ID) { %>
+          <a class="px-3 py-2 rounded-xl hover:bg-slate-100" href="/sitelogs">Logs</a>
+        <% } %>
+  
+        <div class="border-t my-2"></div>
+  
+        <% if (me) { %>
+          <div class="flex items-center justify-between">
+            <div class="text-sm text-slate-600">
+              <% const name = me.global_name || me.username; %>
+              <span>Signed in as <span class="font-medium"><%= name %></span></span>
+            </div>
+            <form method="POST" action="/auth/logout">
+              <button class="px-3 py-2 rounded-xl bg-slate-900 text-white">Logout</button>
+            </form>
+          </div>
+        <% } else { %>
+          <a class="px-3 py-2 rounded-xl bg-indigo-600 text-white text-center" href="/auth/discord">Login with Discord</a>
+        <% } %>
+      </nav>
+    </div>
   </header>
+  
   <main class="max-w-5xl mx-auto p-4">
     <%- body %>
   </main>
   <footer class="max-w-5xl mx-auto p-6 text-center text-sm text-slate-500">
-    <p>© <%= new Date().getFullYear() %> The Chronicler Web</p>
+    <p>© <%= new Date().getFullYear() %> Chronicler</p>
   </footer>
+
+  <script>
+    (function () {
+      const btn = document.getElementById('nav-toggle');
+      const menu = document.getElementById('mobile-menu');
+      const icoOpen = document.getElementById('icon-open');
+      const icoClose = document.getElementById('icon-close');
+  
+      if (!btn || !menu) return;
+  
+      function setOpen(open) {
+        menu.classList.toggle('hidden', !open);
+        icoOpen.classList.toggle('hidden', open);
+        icoClose.classList.toggle('hidden', !open);
+        btn.setAttribute('aria-expanded', String(open));
+        document.body.classList.toggle('overflow-hidden', open); // prevent background scroll when open
+      }
+  
+      btn.addEventListener('click', () => {
+        const isOpen = btn.getAttribute('aria-expanded') === 'true';
+        setOpen(!isOpen);
+      });
+  
+      // Close on Escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') setOpen(false);
+      });
+  
+      // Close when clicking a link in the mobile menu
+      menu.addEventListener('click', (e) => {
+        if (e.target.closest('a')) setOpen(false);
+      });
+    })();
+  </script>
+  
 </body>
 </html>
