@@ -1,12 +1,13 @@
 const router = require("express").Router();
 const { customAlphabet } = require("nanoid");
 const Character = require("../models/Character");
+const Profile = require("../models/Profile");
 const nano = customAlphabet("0123456789abcdefghijklmnopqrstuvwxyz", 10);
 
 router.get("/", async (req, res) => {
   const { guildId, userId } = req.context;
   const chars = await Character.find({ guildId, ownerId: userId }).sort({ characterName: 1 });
-  res.render("characters", { chars, toast: null });
+  res.render("characters", { chars, toast: req.query.msg || null });
 });
 
 router.get("/:id", async (req, res) => {
@@ -28,8 +29,26 @@ router.post("/create", async (req, res) => {
 
 router.post("/:id/delete", async (req, res) => {
   const { guildId, userId } = req.context;
-  await Character.findOneAndDelete({ guildId, ownerId: userId, characterId: req.params.id });
-  res.redirect("/characters");
+  // Delete and capture the deleted doc to read its XP
+  const deleted = await Character.findOneAndDelete({
+    guildId, ownerId: userId, characterId: req.params.id
+  });
+  if (!deleted) throw new Error("Character not found.");
+  const bounty = Math.floor((deleted.experience || 0) / 2);
+  if (bounty > 0) {
+    // Upsert the user's Profile bank and add the bounty
+    let profile = await Profile.findOne({ guildId, userId });
+    if (!profile) {
+      profile = await Profile.create({ guildId, userId, experience: 0, missions: [] });
+    }
+    profile.experience += bounty;
+    await profile.save();
+  }
+  // Show a message on the Characters page
+  const msg = bounty > 0
+    ? `Deleted ${deleted.characterName}. ${bounty} XP was added to your bank.`
+    : `Deleted ${deleted.characterName}.`;
+  res.redirect(`/characters?msg=${encodeURIComponent(msg)}`);
 });
 
 router.post("/:id/rename", async (req, res) => {
